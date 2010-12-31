@@ -15,9 +15,9 @@
  */
 package net.vpg.bot.commands.owner;
 
+import net.vpg.bot.commands.CommandReceivedEvent;
 import net.vpg.bot.commands.manager.WipeCommand;
 import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
 
 public class WipeCommandImpl extends WipeCommand {
     public WipeCommandImpl(Bot bot) {

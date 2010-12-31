@@ -15,13 +15,13 @@
  */
 package net.vpg.bot.commands.owner;
 
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.vpg.bot.commands.CommandReceivedEvent;
 import net.vpg.bot.commands.manager.RetrieveCommand;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,13 +36,13 @@ public class RetrieveCommandImpl extends RetrieveCommand {
     public void execute(CommandReceivedEvent e, String arg) {
         switch (arg) {
             case "vc":
-                VoiceChannel vc0 = e.getSelfMember().getVoiceState().getChannel();
-                e.send(vc0 == null ? null : vc0.toString()
-                    + "\nConnected Members: " + VPMUtil.getListeningMembers(vc0)
+                AudioChannel audio = e.getSelfMember().getVoiceState().getChannel();
+                e.send(audio == null ? null : audio.toString()
+                    + "\nConnected Members: " + VPMUtil.getListeningMembers(audio)
                     .stream()
                     .map(Member::getUser)
                     .collect(Collectors.toList()) + "\n"
-                    + vc0.getGuild().getOwner().toString()).queue();
+                    + audio.getGuild().getOwner().toString()).queue();
                 break;
             case "vc-all":
                 e.getJDA()

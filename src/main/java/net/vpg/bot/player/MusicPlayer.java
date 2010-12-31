@@ -24,13 +24,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.vpg.bot.commands.CommandReceivedEvent;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.framework.Bot;
 import net.vpg.bot.framework.Sender;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
@@ -88,6 +88,7 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
 
     public MusicPlayer configure(long guildId) {
         this.guildId = guildId;
+        //noinspection ConstantConditions
         bot.getShardManager().getGuildById(guildId).getAudioManager().setSendingHandler(this);
         return this;
     }
@@ -119,10 +120,6 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
     }
 
     public boolean checkSkip(List<Member> listeningMembers) {
-        VoiceChannel vc = getConnectedVC();
-        if (vc == null) {
-            return false;
-        }
         listeningMemberCount = listeningMembers.size();
         if (listeningMemberCount > 2) {
             if (listeningMembers.stream()
@@ -139,7 +136,7 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
         return skipVotes;
     }
 
-    public VoiceChannel getConnectedVC() {
+    public AudioChannel getConnectedAudioChannel() {
         return bot.getShardManager()
             .getGuildById(guildId)
             .getMember(bot.getPrimaryShard().getSelfUser())

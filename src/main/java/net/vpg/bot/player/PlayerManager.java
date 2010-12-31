@@ -18,8 +18,8 @@ package net.vpg.bot.player;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import net.dv8tion.jda.api.entities.Guild;
+import net.vpg.bot.commands.CommandReceivedEvent;
 import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

@@ -16,13 +16,13 @@
 package net.vpg.bot.commands.music;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.CommandReceivedEvent;
+import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.commands.BotCommandImpl;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
-import net.vpg.bot.framework.commands.NoArgsCommand;
 import net.vpg.bot.player.MusicPlayer;
 import net.vpg.bot.player.PlayerManager;
 
@@ -39,17 +39,17 @@ public class LeaveCommand extends BotCommandImpl implements NoArgsCommand {
             return;
         }
         // noinspection ConstantConditions
-        VoiceChannel vc = e.getSelfMember().getVoiceState().getChannel();
-        if (vc == null) {
+        AudioChannel audio = e.getSelfMember().getVoiceState().getChannel();
+        if (audio == null) {
             e.send("Leave? Leave what?").queue();
             return;
         }
-        List<Member> members = VPMUtil.getListeningMembers(vc);
+        List<Member> members = VPMUtil.getListeningMembers(audio);
         if (members.isEmpty() ||
             (members.size() == 1 && members.get(0).equals(e.getMember())) ||
             e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             PlayerManager.getPlayer(e).destroy();
-            e.send("Left " + vc.getAsMention()).queue();
+            e.send("Left " + audio.getAsMention()).queue();
             return;
         }
         e.send("No. I am vibin' with my people in 'ere, I can't leave 'em alone like that :(").queue();

@@ -15,11 +15,11 @@
  */
 package net.vpg.bot.commands.music;
 
+import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.CommandReceivedEvent;
+import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.commands.BotCommandImpl;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
-import net.vpg.bot.framework.commands.NoArgsCommand;
 
 public class JoinCommand extends BotCommandImpl implements NoArgsCommand {
     public JoinCommand(Bot bot) {

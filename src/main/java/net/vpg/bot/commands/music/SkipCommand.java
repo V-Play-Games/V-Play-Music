@@ -16,11 +16,11 @@
 package net.vpg.bot.commands.music;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.CommandReceivedEvent;
+import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.commands.BotCommandImpl;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
-import net.vpg.bot.framework.commands.NoArgsCommand;
 import net.vpg.bot.player.MusicPlayer;
 import net.vpg.bot.player.PlayerManager;
 
@@ -41,7 +41,7 @@ public class SkipCommand extends BotCommandImpl implements NoArgsCommand {
             e.send("There's nothin' playin' in 'ere. Party's over. Let's have an after-party whaddaya think?").queue();
             return;
         }
-        List<Member> listeningMembers = VPMUtil.getListeningMembers(player.getConnectedVC());
+        List<Member> listeningMembers = VPMUtil.getListeningMembers(player.getConnectedAudioChannel());
         if (listeningMembers.size() == 1 && listeningMembers.get(0).equals(e.getMember())) {
             player.playNext();
             e.send("Successfully skipped!").queue();

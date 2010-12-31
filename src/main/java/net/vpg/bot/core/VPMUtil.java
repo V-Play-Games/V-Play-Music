@@ -17,14 +17,13 @@ package net.vpg.bot.core;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.vpg.bot.Driver;
+import net.vpg.bot.commands.CommandReceivedEvent;
 import net.vpg.bot.framework.Util;
-import net.vpg.bot.framework.commands.CommandReceivedEvent;
 import net.vpg.bot.player.MusicPlayer;
 import net.vpg.bot.player.PlayerManager;
 
@@ -88,8 +87,8 @@ public class VPMUtil {
 
     @SuppressWarnings("ConstantConditions")
     public static boolean canJoinVC(CommandReceivedEvent e) {
-        VoiceChannel targetVC = e.getMember().getVoiceState().getChannel();
-        if (targetVC == null) {
+        AudioChannel targetAudio = e.getMember().getVoiceState().getChannel();
+        if (targetAudio == null) {
             e.send("Sussy Baka, You have to be in a voice channel for this command to work smh.").queue();
             return false;
         }
@@ -97,28 +96,28 @@ public class VPMUtil {
             e.send("You can't use this command while being deafened!").queue();
             return false;
         }
-        VoiceChannel selfVC = e.getSelfMember().getVoiceState().getChannel();
-        if (targetVC.equals(selfVC)) {
+        AudioChannel selfAudio = e.getSelfMember().getVoiceState().getChannel();
+        if (targetAudio.equals(selfAudio)) {
             return true;
         }
-        if (selfVC != null && !getListeningMembers(selfVC).isEmpty()) {
+        if (selfAudio != null && !getListeningMembers(selfAudio).isEmpty()) {
             e.send("I'm currently vibin' with my people in ")
-                .append(selfVC.getAsMention())
+                .append(selfAudio.getAsMention())
                 .append("\nC'mere or get lost :)").queue();
             return false;
         }
-        if (!e.getSelfMember().hasAccess(targetVC)) {
+        if (!e.getSelfMember().hasAccess(targetAudio)) {
             e.send("I am not stronk enough to join ")
-                .append(targetVC.getAsMention())
+                .append(targetAudio.getAsMention())
                 .append("\n(Insufficient Permissions: Make sure the bot has View Channel and Connect permissions)").queue();
             return false;
         }
-        e.getGuild().getAudioManager().openAudioConnection(targetVC);
-        MessageAction action = e.getChannel().sendMessage("Connected to " + targetVC.getAsMention()).append("\n");
+        e.getGuild().getAudioManager().openAudioConnection(targetAudio);
+        MessageAction action = e.getChannel().sendMessage("Connected to " + targetAudio.getAsMention()).append("\n");
         MusicPlayer player = PlayerManager.getPlayer(e);
         if (!e.getChannel().equals(player.getBoundChannel())) {
             //noinspection ResultOfMethodCallIgnored
-            action.append("Bound to ").append(((GuildChannel) e.getChannel()).getAsMention()).append("\n");
+            action.append("Bound to ").append(e.getChannel().getAsMention()).append("\n");
             player.setBoundChannel(e.getChannel().getIdLong());
         }
         action.queue();
@@ -142,7 +141,7 @@ public class VPMUtil {
         return String.format("`%s` by `%s` (%s)\n<%s>", info.title, info.author, Util.toString(info.length), info.uri);
     }
 
-    public static List<Member> getListeningMembers(VoiceChannel vc) {
+    public static List<Member> getListeningMembers(AudioChannel vc) {
         //noinspection ConstantConditions
         return vc.getMembers()
             .stream()

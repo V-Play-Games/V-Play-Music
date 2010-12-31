@@ -20,9 +20,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.vpg.bot.framework.Util;
 import net.vpg.bot.framework.commands.CommandReceivedEvent;
-import net.vpg.bot.framework.commands.CommandReplyAction;
 import net.vpg.bot.player.MusicPlayer;
 import net.vpg.bot.player.PlayerManager;
 
@@ -136,7 +136,7 @@ public class VPMUtil {
         if (targetVC.equals(selfVC)) {
             return true;
         }
-        if (selfVC != null && getListeningMembers(selfVC).isEmpty()) {
+        if (selfVC != null && !getListeningMembers(selfVC).isEmpty()) {
             e.send("I'm currently vibin' with my people in ")
                 .append(selfVC.getAsMention())
                 .append("\nC'mere or get lost :)").queue();
@@ -149,7 +149,7 @@ public class VPMUtil {
             return false;
         }
         e.getGuild().getAudioManager().openAudioConnection(targetVC);
-        CommandReplyAction action = e.send("Connected to " + targetVC.getAsMention()).append("\n");
+        MessageAction action = e.getChannel().sendMessage("Connected to " + targetVC.getAsMention()).append("\n");
         MusicPlayer player = PlayerManager.getPlayer(e);
         if (!e.getChannel().equals(player.getBoundChannel())) {
             //noinspection ResultOfMethodCallIgnored

@@ -46,7 +46,7 @@ public class Pokemon implements Entity {
     }
 
     public static EntityInitInfo<Pokemon> getInfo() {
-        return new EntityInitInfo<>(new File("resources\\entities\\pokemon.json"), Pokemon::new, Bot.pokemonMap);
+        return new EntityInitInfo<>(new File("src/main/resources/pokemon.json"), Pokemon::new, Bot.pokemonMap);
     }
 
     public List<AbilitySlot> getAbilities() {

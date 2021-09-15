@@ -20,7 +20,7 @@ public class Ability implements Entity {
     }
 
     public static EntityInitInfo<Ability> getInfo() {
-        return new EntityInitInfo<>(new File("resources\\entities\\ability.json"), Ability::new, Bot.abilityMap);
+        return new EntityInitInfo<>(new File("src/main/resources/ability.json"), Ability::new, Bot.abilityMap);
     }
 
     public String getName() {

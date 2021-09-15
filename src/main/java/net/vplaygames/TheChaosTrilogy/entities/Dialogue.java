@@ -26,7 +26,7 @@ public class Dialogue implements Entity {
     }
 
     public static EntityInitInfo<Dialogue> getInfo() {
-        return new EntityInitInfo<>(new File("resources\\entities\\dialogue.json"), Dialogue::new, Bot.dialogueMap);
+        return new EntityInitInfo<>(new File("src/main/resources/dialogue.json"), Dialogue::new, Bot.dialogueMap);
     }
 
     public String getId() {

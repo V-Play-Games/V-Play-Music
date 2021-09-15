@@ -38,7 +38,7 @@ public class Move implements Entity {
     }
 
     public static EntityInitInfo<Move> getInfo() {
-        return new EntityInitInfo<>(new File("resources\\entities\\move.json"), Move::new, Bot.moveMap);
+        return new EntityInitInfo<>(new File("src/main/resources/move.json"), Move::new, Bot.moveMap);
     }
 
     public int getPP() {

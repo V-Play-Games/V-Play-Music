@@ -17,7 +17,7 @@ public class Guess implements Entity {
     }
 
     public static EntityInitInfo<Guess> getInfo() {
-        return new EntityInitInfo<>(new File("resources\\entities\\guess.json"), Guess::new, Bot.guessMap);
+        return new EntityInitInfo<>(new File("src/main/resources/guess.json"), Guess::new, Bot.guessMap);
     }
 
     public String getId() {

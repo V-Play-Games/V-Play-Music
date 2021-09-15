@@ -154,7 +154,7 @@ public class Bot {
                 .map(info.entityConstructor)
                 .forEach(entity -> info.entityMap.put(entity.getId(), entity));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+//            throw new RuntimeException(e);
         }
 
     }

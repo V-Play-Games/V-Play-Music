@@ -50,7 +50,7 @@ public class Bot {
     public static final File logFile = new File("logFile.txt");
     public static final File errorFile = new File("errorFile.txt");
     public static final String TOKEN = System.getenv("TOKEN");
-    public static final String PREFIX = "test!";
+    public static final String PREFIX = System.getenv("PREFIX");
     public static final String SUPPORT_SERVER_INVITE = "https://discord.gg/amvPsGU";
     public static final String INVALID_INPUTS = "Invalid Amount of Inputs!";
     public static JDA jda;

@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 public class Guess implements Entity {
     private String id;
@@ -17,8 +16,8 @@ public class Guess implements Entity {
         this.description = data.getString("description");
     }
 
-    public static EntityInitInfo<Guess> getInfo() throws URISyntaxException {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("guess.json").toURI()),
+    public static EntityInitInfo<Guess> getInfo() {
+        return new EntityInitInfo<>(new File(Ability.class.getResource("guess.json").toString()),
             Guess::new, Bot.guessMap);
     }
 

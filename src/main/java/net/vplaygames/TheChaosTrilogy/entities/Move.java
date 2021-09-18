@@ -5,7 +5,6 @@ import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 public class Move implements Entity {
     int pp;
@@ -38,8 +37,8 @@ public class Move implements Entity {
         this.metadata = new Metadata(data.getObject("meta"));
     }
 
-    public static EntityInitInfo<Move> getInfo() throws URISyntaxException {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("move.json").toURI()),
+    public static EntityInitInfo<Move> getInfo() {
+        return new EntityInitInfo<>(new File(Ability.class.getResource("move.json").toString()),
             Move::new, Bot.moveMap);
     }
 

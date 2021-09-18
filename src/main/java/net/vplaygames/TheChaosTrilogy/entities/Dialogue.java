@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.core.*;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -26,8 +25,8 @@ public class Dialogue implements Entity {
             .collect(Collectors.toMap(State::getId, UnaryOperator.identity()));
     }
 
-    public static EntityInitInfo<Dialogue> getInfo() throws URISyntaxException {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("dialogue.json").toURI()),
+    public static EntityInitInfo<Dialogue> getInfo() {
+        return new EntityInitInfo<>(new File(Ability.class.getResource("dialogue.json").toString()),
             Dialogue::new, Bot.dialogueMap);
     }
 

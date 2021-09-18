@@ -5,7 +5,6 @@ import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 public class Ability implements Entity {
     String id;
@@ -20,8 +19,8 @@ public class Ability implements Entity {
         this.description = data.getString("description");
     }
 
-    public static EntityInitInfo<Ability> getInfo() throws URISyntaxException {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("ability.json").toURI()),
+    public static EntityInitInfo<Ability> getInfo() {
+        return new EntityInitInfo<>(new File(Ability.class.getResource("ability.json").toString()),
             Ability::new, Bot.abilityMap);
     }
 

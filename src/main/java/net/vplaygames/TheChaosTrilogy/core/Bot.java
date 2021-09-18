@@ -79,7 +79,12 @@ public class Bot {
     public static Map<Long, GuessGame> guessGamePlayers = new HashMap<>();
     public static Map<String, AbstractBotCommand> commands = new HashMap<>();
     public static Map<Long, DataObject> responses = new HashMap<>();
-    public static Runnable rebootTasks = () -> {};
+    public static Runnable rebootTasks = () -> {
+    };
+
+    public static JDA getJda() {
+        return jda;
+    }
 
     public static void start() throws LoginException {
         jda = JDABuilder.createDefault(Bot.TOKEN,

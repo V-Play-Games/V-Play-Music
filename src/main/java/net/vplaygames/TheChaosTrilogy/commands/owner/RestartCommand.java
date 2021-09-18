@@ -15,15 +15,13 @@
  */
 package net.vplaygames.TheChaosTrilogy.commands.owner;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.utils.TimeFormat;
-import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.commands.OwnerCommand;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
+import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 
 import java.time.Instant;
-import java.util.function.Consumer;
 
 import static net.vplaygames.TheChaosTrilogy.core.Bot.*;
 
@@ -34,28 +32,28 @@ public class RestartCommand extends OwnerCommand {
 
     @Override
     public void onCommandRun(CommandReceivedEvent e) {
-        e.forceNotLog();
-        e.getChannel().sendMessage("Trying a restart!")
-            .queue(message -> execute(e.getJDA(), s -> message.editMessage(s).queue()));
+        execute(e);
     }
 
     @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) throws Exception {
-        e.forceNotLog();
-        slash.reply("Trying a restart!")
-            .queue(message -> execute(slash.getJDA(), s -> slash.getHook().editOriginal(s).queue()));
+    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
+        execute(e);
     }
 
-    public void execute(JDA jda, Consumer<String> editor) {
-        timer.execute(() -> {
+    public void execute(CommandReceivedEvent e) {
+        e.forceNotLog();
+        e.getChannel().sendMessage("Trying a restart!").queue(message -> timer.execute(() -> {
             long startedAt = System.currentTimeMillis();
             Instant oldInstant = instantAtBoot;
             System.out.println("Shutting Down");
-            jda.shutdown();
+            Bot.getJda().shutdown();
             rebootTasks = () -> {
                 rebooted = true;
-                editor.accept("Restart Successfully Completed! Took "
-                    + (System.currentTimeMillis() - startedAt) + "ms");
+                Bot.getJda()
+                    .getTextChannelById(e.getChannel().getIdLong())
+                    .editMessageById(message.getIdLong(), "Restart Successfully Completed! Took "
+                        + (System.currentTimeMillis() - startedAt) + "ms")
+                    .queue();
                 instantAtBoot = oldInstant;
                 lastRefresh = TimeFormat.RELATIVE.now().toString();
             };
@@ -66,6 +64,6 @@ public class RestartCommand extends OwnerCommand {
                 } catch (Exception ignored) {
                 }
             }
-        });
+        }));
     }
 }

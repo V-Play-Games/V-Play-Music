@@ -1,129 +1,88 @@
 package net.vplaygames.TheChaosTrilogy.player;
 
-import com.sedmelluq.discord.lavaplayer.filter.PcmFilterFactory;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.event.*;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
+import net.vplaygames.TheChaosTrilogy.core.Sender;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GuildAudioManager extends AudioEventAdapter {
+public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventListener, AudioSendHandler {
     JDA jda;
     long guildId;
-    AudioPlayer player;
-    AudioPlayerSendHandler handler;
+    ByteBuffer buffer;
+    MutableAudioFrame frame;
     List<Member> skipVotes;
     Queue<AudioTrack> queue;
+    AtomicBoolean loop;
+    AtomicBoolean loopQueue;
     int listeningMemberCount;
-    public GuildAudioManager(PlayerManager playerManager, AudioManager audioManager) {
+
+    public GuildAudioManager(PlayerManager manager) {
+        super(manager);
+        this.queue = new LinkedBlockingQueue<>();
+        this.addListener(this);
+        this.skipVotes = new ArrayList<>();
+        this.buffer = ByteBuffer.allocate(1024);
+        this.frame = new MutableAudioFrame();
+        this.frame.setBuffer(buffer);
+    }
+
+    public boolean isLoop() {
+        return loop.get();
+    }
+
+    public void setLoop(boolean loop) {
+        this.loop.getAndSet(loop);
+    }
+
+    public boolean isLoopQueue() {
+        return loopQueue.get();
+    }
+
+    public void setLoopQueue(boolean loopQueue) {
+        this.loopQueue.set(loopQueue);
+    }
+
+    public GuildAudioManager setAudioManager(AudioManager audioManager) {
         this.jda = audioManager.getJDA();
         this.guildId = audioManager.getGuild().getIdLong();
-        this.player = playerManager.createPlayer();
-        this.queue = new LinkedBlockingQueue<>();
-        player.addListener(this);
-        this.handler = new AudioPlayerSendHandler(player);
-        this.skipVotes = new ArrayList<>();
-        audioManager.setSendingHandler(handler);
+        audioManager.setSendingHandler(this);
+        return this;
+    }
+
+    public void disconnect() {
+        destroy();
+        jda.getGuildById(guildId).getAudioManager().closeAudioConnection();
+        queue.clear();
+    }
+
+    public void toggleLoop() {
+        setLoop(!loop.get());
+    }
+
+    public void toggleLoopQueue() {
+        setLoopQueue(!loopQueue.get());
     }
 
     public Queue<AudioTrack> getQueue() {
         return queue;
-    }
-
-    public AudioTrack getPlayingTrack() {
-        return player.getPlayingTrack();
-    }
-
-    public void playTrack(AudioTrack track) {
-        player.playTrack(track);
-    }
-
-    public boolean startTrack(AudioTrack track, boolean noInterrupt) {
-        return player.startTrack(track, noInterrupt);
-    }
-
-    public void stopTrack() {
-        player.stopTrack();
-    }
-
-    public int getVolume() {
-        return player.getVolume();
-    }
-
-    public void setVolume(int volume) {
-        player.setVolume(volume);
-    }
-
-    public void setFilterFactory(PcmFilterFactory factory) {
-        player.setFilterFactory(factory);
-    }
-
-    public void setFrameBufferDuration(Integer duration) {
-        player.setFrameBufferDuration(duration);
-    }
-
-    public boolean isPaused() {
-        return player.isPaused();
-    }
-
-    public void setPaused(boolean value) {
-        player.setPaused(value);
-    }
-
-    public void destroy() {
-        player.destroy();
-    }
-
-    public void addListener(AudioEventListener listener) {
-        player.addListener(listener);
-    }
-
-    public void removeListener(AudioEventListener listener) {
-        player.removeListener(listener);
-    }
-
-    public void checkCleanup(long threshold) {
-        player.checkCleanup(threshold);
-    }
-
-    public AudioFrame provide() {
-        return player.provide();
-    }
-
-    public AudioFrame provide(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        return player.provide(timeout, unit);
-    }
-
-    public boolean provide(MutableAudioFrame targetFrame) {
-        return player.provide(targetFrame);
-    }
-
-    public boolean provide(MutableAudioFrame targetFrame, long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        return player.provide(targetFrame, timeout, unit);
-    }
-
-//    public AudioPlayer getPlayer() {
-//        return player;
-//    }
-
-    public AudioPlayerSendHandler getHandler() {
-        return handler;
     }
 
     public void skip(CommandReceivedEvent e) {
@@ -172,20 +131,42 @@ public class GuildAudioManager extends AudioEventAdapter {
         return jda.getGuildById(guildId).getMember(jda.getSelfUser()).getVoiceState().getChannel();
     }
 
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+    public void onPlayerPause() {
+    }
+
+    public void onPlayerResume() {
+    }
+
+    public void onTrackStart(AudioTrack track) {
+    }
+
+    public void onTrackException(AudioTrack track, FriendlyException exception) {
+        playNext();
+    }
+
+    public void onTrackStuck(AudioTrack track, long thresholdMs) {
+        playNext();
+    }
+
+    public void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason.mayStartNext) {
-            playNext();
+            if (loop.get()) {
+                startTrack(track.makeClone(), false);
+            } else {
+                playNext();
+            }
+        } else if (endReason != AudioTrackEndReason.CLEANUP && loopQueue.get()) {
+            queue.offer(getPlayingTrack().makeClone());
         }
     }
 
     public void playNext() {
         clearSkipVotes();
-        player.startTrack(queue.poll(), false);
+        startTrack(queue.poll(), false);
     }
 
-    public void queue(CommandReceivedEvent e, AudioTrack track) {
-        if (!player.startTrack(track, true)) {
+    public void queue(Sender e, AudioTrack track) {
+        if (!startTrack(track, true)) {
             queue.offer(track);
             e.send("Added to queue: " + Util.toString(track)).queue();
         } else {
@@ -193,7 +174,7 @@ public class GuildAudioManager extends AudioEventAdapter {
         }
     }
 
-    public void queue(CommandReceivedEvent e, AudioPlaylist playlist) {
+    public void queue(Sender e, AudioPlaylist playlist) {
         queue.addAll(playlist.getTracks());
         e.send("Added to queue: ")
             .append(Integer.toString(playlist.getTracks().size()))
@@ -205,5 +186,39 @@ public class GuildAudioManager extends AudioEventAdapter {
 
     public void clearSkipVotes() {
         skipVotes.clear();
+    }
+
+    @Override
+    public void onEvent(AudioEvent event) {
+        if (event instanceof PlayerPauseEvent) {
+            onPlayerPause();
+        } else if (event instanceof PlayerResumeEvent) {
+            onPlayerResume();
+        } else if (event instanceof TrackStartEvent) {
+            onTrackStart(((TrackStartEvent) event).track);
+        } else if (event instanceof TrackEndEvent) {
+            onTrackEnd(((TrackEndEvent) event).track, ((TrackEndEvent) event).endReason);
+        } else if (event instanceof TrackExceptionEvent) {
+            onTrackException(((TrackExceptionEvent) event).track, ((TrackExceptionEvent) event).exception);
+        } else if (event instanceof TrackStuckEvent) {
+            TrackStuckEvent stuck = (TrackStuckEvent) event;
+            onTrackStuck(stuck.track, stuck.thresholdMs);
+        }
+    }
+
+    // Methods for sending Audio
+    @Override
+    public boolean canProvide() {
+        return provide(frame);
+    }
+
+    @Override
+    public ByteBuffer provide20MsAudio() {
+        return (ByteBuffer) buffer.flip();
+    }
+
+    @Override
+    public boolean isOpus() {
+        return true;
     }
 }

@@ -6,6 +6,7 @@ import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,8 +46,9 @@ public class Pokemon implements Entity {
             .collect(Collectors.toList())));
     }
 
-    public static EntityInitInfo<Pokemon> getInfo() {
-        return new EntityInitInfo<>(new File("src/main/resources/pokemon.json"), Pokemon::new, Bot.pokemonMap);
+    public static EntityInitInfo<Pokemon> getInfo() throws URISyntaxException {
+        return new EntityInitInfo<>(new File(Ability.class.getResource("pokemon.json").toURI()),
+            Pokemon::new, Bot.pokemonMap);
     }
 
     public List<AbilitySlot> getAbilities() {

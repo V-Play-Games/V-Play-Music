@@ -29,7 +29,7 @@ import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-public class CommandReceivedEvent {
+public class CommandReceivedEvent implements Sender {
     public final long messageId;
     public final long processId;
     public final MessageChannel channel;
@@ -64,7 +64,7 @@ public class CommandReceivedEvent {
                 false);
         this.args = Arrays.asList(args);
         this.message = e.getMessage();
-        action = new CommandReplyAction(message);
+        action = new CommandReplyAction(null, message, this::log);
     }
 
     public CommandReceivedEvent(SlashCommandEvent e, AbstractBotCommand command) {
@@ -79,7 +79,7 @@ public class CommandReceivedEvent {
                 e.getTimeCreated(),
                 true);
         slash = e;
-        action = new CommandReplyAction(e);
+        action = new CommandReplyAction(e, null, this::log);
     }
 
     public CommandReceivedEvent(JDA api,
@@ -172,22 +172,16 @@ public class CommandReceivedEvent {
     }
 
     @CheckReturnValue
-    public CommandReplyAction send(String content, File... files) {
+    public CommandReplyAction send(String content) {
         responded(content);
         action.append(content);
-        for (File file : files) {
-            action.addFile(file);
-        }
         return action;
     }
 
     @CheckReturnValue
-    public CommandReplyAction send(MessageEmbed embed, String placeholder, File... files) {
+    public CommandReplyAction send(MessageEmbed embed, String placeholder) {
         responded(placeholder);
         action.addEmbeds(embed);
-        for (File file : files) {
-            action.addFile(file);
-        }
         return action;
     }
 

@@ -7,9 +7,9 @@ import net.vplaygames.TheChaosTrilogy.core.Util;
 import net.vplaygames.TheChaosTrilogy.player.GuildAudioManager;
 import net.vplaygames.TheChaosTrilogy.player.PlayerManager;
 
-public class ResumeCommand extends AbstractBotCommand {
-    public ResumeCommand() {
-        super("resume", "Stops the current song");
+public class LoopQueueCommand extends AbstractBotCommand {
+    public LoopQueueCommand() {
+        super("loopqueue", "Shows info on currently playing track if any", "lq");
     }
 
     @Override
@@ -27,15 +27,7 @@ public class ResumeCommand extends AbstractBotCommand {
             return;
         }
         GuildAudioManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
-        if (manager.getPlayingTrack() == null) {
-            e.send("Resume? Resume what? Nothin' playin' in 'ere.").queue();
-            return;
-        }
-        if (!manager.isPaused()) {
-            e.send("Resume? Resume what? Isn't it playing already?").queue();
-            return;
-        }
-        manager.setPaused(false);
-        e.send("Resumed the track.").queue();
+        manager.toggleLoopQueue();
+        e.send("Set queue loop to " + manager.isLoopQueue()).queue();
     }
 }

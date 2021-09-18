@@ -25,8 +25,22 @@ public class CommandReplyAction {
     private ReplyAction reply;
     private MessageAction message;
     private String content = "";
+    private Runnable beforeQueueTasks;
+
+    public CommandReplyAction(Message message) {
+        this(null, message);
+    }
+
+    public CommandReplyAction(Interaction interaction) {
+        this(interaction, null);
+    }
 
     public CommandReplyAction(Interaction interaction, Message message) {
+        this(interaction, message, null);
+    }
+
+    public CommandReplyAction(Interaction interaction, Message message, Runnable beforeQueueTasks) {
+        this.beforeQueueTasks = beforeQueueTasks;
         if (interaction != null) {
             this.reply = interaction.deferReply();
             isReply = true;
@@ -34,14 +48,6 @@ public class CommandReplyAction {
             this.message = message.reply(" ");
             isReply = false;
         }
-    }
-
-    public CommandReplyAction(Interaction interaction) {
-        this(interaction, null);
-    }
-
-    public CommandReplyAction(Message message) {
-        this(null, message);
     }
 
     public String getContent() {
@@ -290,19 +296,11 @@ public class CommandReplyAction {
     }
 
     public void queue() {
-        if (isReply) {
-            reply.queue();
-        } else {
-            message.queue();
-        }
+        queue(null);
     }
 
     public void queue(Consumer<? super Object> success) {
-        if (isReply) {
-            reply.queue(success);
-        } else {
-            message.queue(success);
-        }
+        queue(success, null);
     }
 
     public Object complete() {
@@ -318,46 +316,29 @@ public class CommandReplyAction {
     }
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit) {
-        if (isReply) {
-            return reply.queueAfter(delay, unit);
-        } else {
-            return message.queueAfter(delay, unit);
-        }
+        return queueAfter(delay, unit, null, null, null);
     }
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super Object> success) {
-        if (isReply) {
-            return reply.queueAfter(delay, unit, success);
-        } else {
-            return message.queueAfter(delay, unit, success);
-        }
+        return queueAfter(delay, unit, success, null, null);
     }
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super Object> success, Consumer<? super Throwable> failure) {
-        if (isReply) {
-            return reply.queueAfter(delay, unit, success, failure);
-        } else {
-            return message.queueAfter(delay, unit, success, failure);
-        }
+        return queueAfter(delay, unit, success, failure, null);
     }
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, ScheduledExecutorService executor) {
-        if (isReply) {
-            return reply.queueAfter(delay, unit, executor);
-        } else {
-            return message.queueAfter(delay, unit, executor);
-        }
+        return queueAfter(delay, unit, null, null, executor);
     }
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super Object> success, ScheduledExecutorService executor) {
-        if (isReply) {
-            return reply.queueAfter(delay, unit, success, executor);
-        } else {
-            return message.queueAfter(delay, unit, success, executor);
-        }
+        return queueAfter(delay, unit, success, null, executor);
     }
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super Object> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor) {
+        if (beforeQueueTasks != null) {
+            beforeQueueTasks.run();
+        }
         if (isReply) {
             return reply.queueAfter(delay, unit, success, failure, executor);
         } else {

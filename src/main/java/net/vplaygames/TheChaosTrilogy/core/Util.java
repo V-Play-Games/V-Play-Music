@@ -75,6 +75,13 @@ public class Util {
         return "`" + track.title + "` by `" + track.author + "` Link: <"+track.uri+">";
     }
 
+    public static List<Member> getMembers(VoiceChannel vc) {
+        return vc.getMembers()
+            .stream()
+            .filter(member -> !member.getUser().isBot())
+            .collect(Collectors.toList());
+    }
+
     public static List<Member> getListeningMembers(VoiceChannel vc) {
         return vc.getMembers()
             .stream()

@@ -44,13 +44,13 @@ public class RetrieveCommand extends OwnerCommand {
         switch (msg[1]) {
             case "logs":
                 File temp = Util.makeFileOf(Bot.responses, "logs-" + System.currentTimeMillis());
-                e.send("Here!", temp).queue(x -> temp.delete());
+                e.send("Here!").addFile(temp).queue(x -> temp.delete());
                 break;
             case "logFile":
-                e.send("logFile", Bot.logFile).queue();
+                e.send("logFile").addFile(Bot.logFile).queue();
                 break;
             case "errorFile":
-                e.send("errorFile", Bot.errorFile).queue();
+                e.send("errorFile").addFile(Bot.errorFile).queue();
                 break;
             default:
                 e.send("idk what you want :/").queue();

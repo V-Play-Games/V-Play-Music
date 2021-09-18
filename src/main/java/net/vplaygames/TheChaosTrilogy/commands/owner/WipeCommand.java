@@ -17,9 +17,9 @@ package net.vplaygames.TheChaosTrilogy.commands.owner;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.commands.OwnerCommand;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
+import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
 public class WipeCommand extends OwnerCommand {
@@ -46,6 +46,9 @@ public class WipeCommand extends OwnerCommand {
             case "ratelimit":
                 Bot.commands.values().forEach((command) -> command.getRateLimited().clear());
                 break;
+            default:
+                e.send("wat").queue();
+                return;
         }
         e.send("Data Wiped!").queue();
     }

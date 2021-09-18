@@ -9,8 +9,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class GuessGame {
-    public static Random random = new Random();
-    public static List<String> guessIds = new ArrayList<>(Bot.guessMap.keySet());
+    public final static Random random = new Random();
+    public final static List<String> guessIds = new ArrayList<>(Bot.guessMap.keySet());
     private long userId;
     private Guess guess_;
     private ScheduledFuture<?> gameEndingAction;

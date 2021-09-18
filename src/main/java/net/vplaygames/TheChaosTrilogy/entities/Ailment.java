@@ -41,7 +41,7 @@ public enum Ailment {
                 return ailment;
             }
         }
-        throw new RuntimeException(key + " ailment?");
+        throw new IllegalArgumentException(key + " ailment?");
     }
 
     public String getName() {

@@ -20,18 +20,19 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
-import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
+import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class MemeCommand extends AbstractBotCommand {
-    public static final ArrayList<Meme> randomMemes = new ArrayList<>();
-    public Connection conn = new Connection();
+    public static final List<Meme> randomMemes = new ArrayList<>();
+    public final Connection conn = new Connection();
 
     public MemeCommand() {
         super("meme", "Pulls a random meme from Reddit");
@@ -43,7 +44,9 @@ public class MemeCommand extends AbstractBotCommand {
                 randomMemes.addAll(conn.getMemes(10));
                 randomMemes.addAll(conn.getMemes(10, "PokemonMasters"));
                 randomMemes.addAll(conn.getMemes(10, "Pokemon"));
-            } catch (IOException ignored) {}
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

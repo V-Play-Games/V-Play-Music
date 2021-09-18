@@ -28,6 +28,6 @@ public class NowPlayingCommand extends AbstractBotCommand {
             e.send("There's nothing playin' in 'ere. Party's over. Let's have an after party whaddaya think?").queue();
             return;
         }
-        e.send("Now Playing: "+ Util.toString(currentTrack)).queue();
+        e.send("Now Playing: " + Util.toString(currentTrack)).queue();
     }
 }

@@ -32,10 +32,10 @@ public abstract class OwnerCommand extends AbstractBotCommand {
 
     @Override
     public boolean runChecks(CommandReceivedEvent e) {
-        if(e.getAuthor().getIdLong() == Bot.BOT_OWNER) {
+        if (e.getAuthor().getIdLong() != Bot.BOT_OWNER) {
             e.send("You do not have the permission to do that!").queue();
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }

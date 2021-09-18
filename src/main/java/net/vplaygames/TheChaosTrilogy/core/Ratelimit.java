@@ -16,9 +16,9 @@
 package net.vplaygames.TheChaosTrilogy.core;
 
 public class Ratelimit {
-    public boolean informed;
     public final long inflictedAt;
     public final long inflictedOn;
+    public boolean informed;
 
     public Ratelimit(long i) {
         informed = false;

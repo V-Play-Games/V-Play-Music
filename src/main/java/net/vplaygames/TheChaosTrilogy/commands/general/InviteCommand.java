@@ -18,8 +18,8 @@ package net.vplaygames.TheChaosTrilogy.commands.general;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
-import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
+import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 
 public class InviteCommand extends AbstractBotCommand {
     public InviteCommand() {

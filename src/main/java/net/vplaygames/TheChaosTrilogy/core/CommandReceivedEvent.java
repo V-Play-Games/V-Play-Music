@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
 
 import javax.annotation.CheckReturnValue;
-import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -40,9 +39,8 @@ public class CommandReceivedEvent implements Sender {
     public final OffsetDateTime timeCreated;
     public final String content;
     public final AbstractBotCommand command;
-    public final DataObject logRepresentation = DataObject.empty();
+    public final Member selfMember;
     public Message message;
-    public Member selfMember;
     public SlashCommandEvent slash;
     public boolean isSlashCommand;
     public boolean forceNotLog;
@@ -53,15 +51,15 @@ public class CommandReceivedEvent implements Sender {
 
     public CommandReceivedEvent(GuildMessageReceivedEvent e, String[] args, AbstractBotCommand command) {
         this(e.getJDA(),
-                e.getMessageIdLong(),
-                e.getChannel(),
-                e.getGuild(),
-                e.getAuthor(),
-                e.getMember(),
-                e.getMessage().getContentRaw(),
-                command,
-                e.getMessage().getTimeCreated(),
-                false);
+            e.getMessageIdLong(),
+            e.getChannel(),
+            e.getGuild(),
+            e.getAuthor(),
+            e.getMember(),
+            e.getMessage().getContentRaw(),
+            command,
+            e.getMessage().getTimeCreated(),
+            false);
         this.args = Arrays.asList(args);
         this.message = e.getMessage();
         action = new CommandReplyAction(null, message, this::log);
@@ -69,15 +67,15 @@ public class CommandReceivedEvent implements Sender {
 
     public CommandReceivedEvent(SlashCommandEvent e, AbstractBotCommand command) {
         this(e.getJDA(),
-                e.getIdLong(),
-                e.getChannel(),
-                e.getGuild(),
-                e.getUser(),
-                e.getMember(),
-                null,
-                command,
-                e.getTimeCreated(),
-                true);
+            e.getIdLong(),
+            e.getChannel(),
+            e.getGuild(),
+            e.getUser(),
+            e.getMember(),
+            null,
+            command,
+            e.getTimeCreated(),
+            true);
         slash = e;
         action = new CommandReplyAction(e, null, this::log);
     }
@@ -104,7 +102,6 @@ public class CommandReceivedEvent implements Sender {
         this.isSlashCommand = isSlashCommand;
         this.processId = Bot.lastCommandId.getAndIncrement();
         this.selfMember = guild.getMember(api.getSelfUser());
-        Bot.responses.put(processId, logRepresentation);
     }
 
     public static void run(GuildMessageReceivedEvent e, String[] args, AbstractBotCommand command) {
@@ -194,8 +191,8 @@ public class CommandReceivedEvent implements Sender {
         forceNotLog = true;
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void log() {
+        DataObject logRepresentation = DataObject.empty();
         logRepresentation.put("id", processId);
         logRepresentation.put("time", timeCreated.toEpochSecond());
         logRepresentation.put("content", content);
@@ -208,23 +205,22 @@ public class CommandReceivedEvent implements Sender {
         logRepresentation.put("messageId", getMessageIdLong());
         logRepresentation.put("trouble", trouble);
         if (isFromGuild()) {
-            logRepresentation.put("guildId", getGuild().getIdLong());
+            logRepresentation.put("guild", getGuild().getIdLong());
             logRepresentation.put("guildName", getGuild().getName());
         }
-        if (!forceNotLog && Bot.logChannel != null) {
-            File logRepresentationFile = Util.makeFileOf(logRepresentation, "log-file-" + processId);
-            Bot.logChannel.sendMessageEmbeds(new EmbedBuilder()
-                    .setTitle("Process id " + processId)
-                    .setDescription("Error: " + (trouble == null
-                            ? "None"
-                            : trouble.getClass() + ": " + trouble.getMessage() + "\n\t at " + trouble.getStackTrace()[0]) +
-                            "\nUsed in " + (!isFromGuild() ? "the DM of " : "#" + getChannel().getName() + "(<#" + getChannel().getId() + ">) by ")
-                            + getAuthor().getAsTag() + " (" + getAuthor().getAsMention() + ")")
-                    .addField("Input", content.length() > 1024 ? content.substring(0, 1021) + "..." : content, false)
-                    .addField("Output", output.length() > 1024 ? output.substring(0, 1021) + "..." : output, false)
-                    .build())
-                    .addFile(logRepresentationFile)
-                    .queue(m -> logRepresentationFile.delete());
+        if (!forceNotLog && Bot.getLogChannel() != null) {
+            Bot.getLogChannel().sendMessageEmbeds(new EmbedBuilder()
+                .setTitle("Process id " + processId)
+                .setDescription("Error: " + (trouble == null
+                    ? "None"
+                    : trouble.getClass() + ": " + trouble.getMessage() + "\n\t at " + trouble.getStackTrace()[0]) +
+                    "\nUsed in " + (!isFromGuild() ? "the DM of " : "#" + getChannel().getName() + "(<#" + getChannel().getId() + ">) by ")
+                    + getAuthor().getAsTag() + " (" + getAuthor().getAsMention() + ")")
+                .addField("Input", content.length() > 1024 ? content.substring(0, 1021) + "..." : content, false)
+                .addField("Output", output.length() > 1024 ? output.substring(0, 1021) + "..." : output, false)
+                .build())
+                .addFile(Util.makeFileOf(logRepresentation, "log-file-" + processId + ".json"))
+                .queue();
         }
     }
 }

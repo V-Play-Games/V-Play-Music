@@ -35,10 +35,10 @@ public class SearchCommand extends AbstractBotCommand {
             e.send(new EmbedBuilder()
                 .setTitle(p.getName())
                 .setDescription("General Info:" +
-                    "\n**Type**: "+p.getType().getName() +
-                    "\n**Base Stats**: "+p.getBaseStats() +
-                    "\n**EV Yield**: "+p.getEvYield()+
-                    "\n**Base Exp Rate**: "+p.getExpYield())
+                    "\n**Type**: " + p.getType().getName() +
+                    "\n**Base Stats**: " + p.getBaseStats() +
+                    "\n**EV Yield**: " + p.getEvYield() +
+                    "\n**Base Exp Rate**: " + p.getExpYield())
                 .addField("Possible Abilities", p.getAbilities()
                     .stream()
                     .map(slot -> slot.getAbility().getName() + (slot.isHidden() ? " (Hidden)" : ""))

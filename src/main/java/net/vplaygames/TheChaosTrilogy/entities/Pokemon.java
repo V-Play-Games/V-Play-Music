@@ -40,8 +40,8 @@ public class Pokemon implements Entity {
             .entrySet()
             .stream()
             .collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.stream(e.getValue().toString().split(";;;"))
-            .map(MoveLearningMethod::of)
-            .collect(Collectors.toList())));
+                .map(MoveLearningMethod::of)
+                .collect(Collectors.toList())));
     }
 
     public static EntityInitInfo<Pokemon> getInfo() {
@@ -149,7 +149,7 @@ public class Pokemon implements Entity {
         }
 
         public static MoveLearningMethod of(String id) {
-            return Optional.ofNullable(methods.get(id)).orElseThrow(() -> new RuntimeException(id));
+            return Optional.ofNullable(methods.get(id)).orElseThrow(() -> new IllegalArgumentException(id));
         }
 
         public String getMethod() {
@@ -159,7 +159,7 @@ public class Pokemon implements Entity {
         public String toString() {
             switch (method) {
                 case "level-up":
-                    return "at level "+levelRequired;
+                    return "at level " + levelRequired;
                 case "machine":
                     return "TM/HM";
                 case "egg":
@@ -170,8 +170,9 @@ public class Pokemon implements Entity {
                     return "after changing form";
                 case "light-ball-egg":
                     return "using what?";
+                default:
+                    return "by no idea how";
             }
-            return "by no idea how";
         }
 
         public int getLevelRequired() {

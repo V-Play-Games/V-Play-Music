@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Connection implements Closeable {
-    OkHttpClient client;
     final static String MEME_URL_ENDPOINT = "https://meme-api.herokuapp.com/gimme/";
+    OkHttpClient client;
 
     public Connection() {
         client = new OkHttpClient();
@@ -58,10 +58,10 @@ public class Connection implements Closeable {
         if (jo.hasKey("memes"))
             return jo.getArray("memes")
                 .stream(DataArray::getObject)
-                .map(Meme::parse)
+                .map(Meme::new)
                 .collect(Collectors.toList());
         else
-            return Collections.singletonList(Meme.parse(jo));
+            return Collections.singletonList(new Meme(jo));
     }
 
     private Response requestData(String url) throws IOException {

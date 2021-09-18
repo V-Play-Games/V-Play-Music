@@ -5,8 +5,8 @@ import net.vplaygames.TheChaosTrilogy.core.Bot;
 import java.util.Map;
 
 public class EntityReference<T extends Entity> {
-    public Map<String, ?> map;
-    public String id;
+    public final Map<String, ?> map;
+    public final String id;
 
     public EntityReference(Class<T> entityClass, String id) {
         this.id = id;

@@ -17,8 +17,6 @@ package net.vplaygames.TheChaosTrilogy.commands.fun.meme;
 
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import java.util.Arrays;
-
 public class Meme {
     public final String postLink;
     public final String subreddit;
@@ -28,45 +26,26 @@ public class Meme {
     public final boolean spoiler;
     public final String author;
     public final int ups;
-    public final String[] previews;
 
-    public Meme(String postLink, String subreddit, String title, String url, boolean nsfw, boolean spoiler, String author, int ups, String[] previews) {
-        this.postLink = postLink;
-        this.subreddit = subreddit;
-        this.title = title;
-        this.url = url;
-        this.nsfw = nsfw;
-        this.spoiler = spoiler;
-        this.author = author;
-        this.ups = ups;
-        this.previews = previews;
-    }
-
-    public static Meme parse(String json) {
-        return parse(DataObject.fromJson(json));
-    }
-
-    public static Meme parse(DataObject data) {
-        int ups          = data.getInt("ups");
-        boolean nsfw     = data.getBoolean("nsfw");
-        boolean spoiler  = data.getBoolean("spoiler");
-        String postLink  = data.getString("postLink");
-        String subreddit = data.getString("subreddit");
-        String title     = data.getString("title");
-        String url       = data.getString("url");
-        String author    = data.getString("author");
-        return new Meme(postLink, subreddit, title, url, nsfw, spoiler, author, ups, new String[0]);
+    public Meme(DataObject data) {
+        this.postLink = data.getString("postLink");
+        this.subreddit = data.getString("subreddit");
+        this.title = data.getString("title");
+        this.url = data.getString("url");
+        this.author = data.getString("author");
+        this.ups = data.getInt("ups");
+        this.nsfw = data.getBoolean("nsfw");
+        this.spoiler = data.getBoolean("spoiler");
     }
 
     public String toJSONString() {
         return "{\"postLink\":\"" + postLink +
-                "\",\"subreddit\":\" " + subreddit +
-                "\",\"title\":\"" + title +
-                "\",\"url\":\"" + url +
-                "\",\"nsfw\":" + nsfw +
-                ",\"spoiler\":" + spoiler +
-                ",\"author\":\"" + author +
-                "\",\"ups\":" + ups +
-                ",\"previews\":" + Arrays.deepToString(previews)+"}";
+            "\",\"subreddit\":\" " + subreddit +
+            "\",\"title\":\"" + title +
+            "\",\"url\":\"" + url +
+            "\",\"nsfw\":" + nsfw +
+            ",\"spoiler\":" + spoiler +
+            ",\"author\":\"" + author +
+            "\",\"ups\":" + ups + "}";
     }
 }

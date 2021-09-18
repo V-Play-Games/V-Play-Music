@@ -88,14 +88,14 @@ public class Dialogue implements Entity {
             data.getArray("buttons")
                 .stream(DataArray::getObject)
                 .forEach(button -> {
-                    String id = button.getString("id");
-                    buttonActions.put(id, button.getArray("actions")
+                    String buttonId = button.getString("id");
+                    buttonActions.put(buttonId, button.getArray("actions")
                         .stream(DataArray::getString)
                         .collect(Collectors.toList()));
                     if (button.hasKey("emote")) {
-                        buttons.add(Button.primary(id, Emoji.fromMarkdown(button.getString("emote"))));
+                        buttons.add(Button.primary(buttonId, Emoji.fromMarkdown(button.getString("emote"))));
                     } else {
-                        buttons.add(Button.primary(id, button.getString("label", "wha-")));
+                        buttons.add(Button.primary(buttonId, button.getString("label", "wha-")));
                     }
                 });
         }
@@ -113,16 +113,16 @@ public class Dialogue implements Entity {
         }
 
         public void send(CommandReceivedEvent e) {
-            long id = e.getAuthor().getIdLong();
-            e.send(getText(Bot.getPlayer(id).setPosition(Dialogue.this.id)))
-                .addActionRows(getActionRow(id))
+            long authorId = e.getAuthor().getIdLong();
+            e.send(getText(Bot.getPlayer(authorId).setPosition(Dialogue.this.id)))
+                .addActionRows(getActionRow(authorId))
                 .queue();
         }
 
         public void send(ButtonClickEvent e) {
-            long id = e.getUser().getIdLong();
-            e.reply(getText(Bot.getPlayer(id).setPosition(Dialogue.this.id)))
-                .addActionRows(getActionRow(id))
+            long authorId = e.getUser().getIdLong();
+            e.reply(getText(Bot.getPlayer(authorId).setPosition(Dialogue.this.id)))
+                .addActionRows(getActionRow(authorId))
                 .queue();
         }
 

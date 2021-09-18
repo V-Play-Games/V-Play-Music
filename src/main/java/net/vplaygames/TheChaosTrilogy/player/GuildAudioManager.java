@@ -110,7 +110,7 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
         if (vc == null) {
             return false;
         }
-        if (skipVotes.size() == 0) {
+        if (skipVotes.isEmpty()) {
             return false;
         }
         List<Member> listeningMembers = Util.getListeningMembers(vc);
@@ -134,12 +134,15 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
     }
 
     public void onPlayerPause() {
+        // Unimplemented Method
     }
 
     public void onPlayerResume() {
+        // Unimplemented Method
     }
 
     public void onTrackStart(AudioTrack track) {
+        // Unimplemented Method
     }
 
     public void onTrackException(AudioTrack track, FriendlyException exception) {

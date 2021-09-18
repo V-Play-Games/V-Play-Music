@@ -17,14 +17,7 @@ public interface ActionHandler {
         public void handle(ButtonClickEvent e, String arg) {
             Player player = Bot.players.get(e.getUser().getIdLong());
             if (player.getMale() == -1) {
-                switch (arg) {
-                    case "m":
-                        player.setMale(1);
-                        break;
-                    case "f":
-                        player.setMale(0);
-                        break;
-                }
+                player.setMale(arg.equals("m") ? 1 : 0);
             }
         }
     }

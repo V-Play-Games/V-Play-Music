@@ -124,7 +124,7 @@ public class Move implements Entity {
                     return target;
                 }
             }
-            throw new RuntimeException(key + " target?");
+            throw new IllegalArgumentException(key + " target?");
         }
 
         public String getName() {
@@ -167,7 +167,7 @@ public class Move implements Entity {
                     return category;
                 }
             }
-            throw new RuntimeException(key + " category?");
+            throw new IllegalArgumentException(key + " category?");
         }
 
         public String getName() {
@@ -199,7 +199,7 @@ public class Move implements Entity {
                     return category;
                 }
             }
-            throw new RuntimeException(key + " category?");
+            throw new IllegalArgumentException(key + " category?");
         }
 
         public String getName() {

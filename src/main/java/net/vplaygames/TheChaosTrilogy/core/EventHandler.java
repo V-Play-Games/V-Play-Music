@@ -29,14 +29,36 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.time.Instant;
+import java.util.regex.Pattern;
 
 public class EventHandler extends ListenerAdapter {
     private static EventHandler instance;
+    private static Pattern selfMention;
 
-    protected EventHandler() {}
+    protected EventHandler() {
+    }
 
     public static EventHandler getInstance() {
         return instance == null ? instance = new EventHandler() : instance;
+    }
+
+    public static Pattern getSelfMentionPattern() {
+        return selfMention == null ? selfMention = Pattern.compile("<@!?>") : selfMention;
+    }
+
+    public static void botPingedEvent(GuildMessageReceivedEvent e) {
+        e.getChannel().sendMessage("Prefix: " + Bot.PREFIX).setEmbeds(new EmbedBuilder()
+            .setAuthor("V Play Games Bot Info")
+            .setDescription("A Pokemon-related bot created, developed & maintained by <@" + Bot.BOT_OWNER + ">")
+            .addField("Developer", "<@" + Bot.BOT_OWNER + ">", true)
+            .addField("Version", Bot.VERSION, true)
+            .addField("Server Count", String.valueOf(e.getJDA().getGuilds().size()), false)
+            .setFooter("Bot Mentioned at ")
+            .setTimestamp(Instant.now())
+            .setThumbnail(e.getJDA().getSelfUser().getAvatarUrl())
+            .setColor(0x1abc9c)
+            .build())
+            .queue();
     }
 
     @Override
@@ -58,8 +80,8 @@ public class EventHandler extends ListenerAdapter {
                         CommandReceivedEvent.run(e, args, command);
                 } else if (Util.equalsAnyIgnoreCase(Util.reduceToAlphabets(content), "Hi", "Hey", "Hello", "Bye"))
                     e.getChannel().sendMessage(Util.toProperCase(content) + "!").queue();
-                else if (message.getMentionedUsers().contains(e.getJDA().getSelfUser()))
-                    BotPingedEvent(e);
+                else if (getSelfMentionPattern().matcher(message.getContentRaw()).find())
+                    botPingedEvent(e);
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -76,9 +98,9 @@ public class EventHandler extends ListenerAdapter {
                     e.getChannel().sendMessage("Thanks for activating me again!").queue();
                 }
             } else if (!e.getChannel().getType().isGuild() || ((TextChannel) e.getChannel()).canTalk()) {
-                    AbstractBotCommand command = Bot.commands.get(e.getName());
-                    if (command != null)
-                        CommandReceivedEvent.run(e, command);
+                AbstractBotCommand command = Bot.commands.get(e.getName());
+                if (command != null)
+                    CommandReceivedEvent.run(e, command);
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -103,20 +125,5 @@ public class EventHandler extends ListenerAdapter {
     public void onButtonClick(@Nonnull ButtonClickEvent e) {
         Bot.buttonHandlers.get(Util.getMethod(e.getComponentId()))
             .handle(e, Util.getArgs(e.getComponentId()).split(":"));
-    }
-
-    public static void BotPingedEvent(GuildMessageReceivedEvent e) {
-        e.getChannel().sendMessage("Prefix: " + Bot.PREFIX).setEmbeds(new EmbedBuilder()
-            .setAuthor("V Play Games Bot Info")
-            .setDescription("A Pokemon-related bot created, developed & maintained by <@" + Bot.BOT_OWNER + ">")
-            .addField("Developer", "<@" + Bot.BOT_OWNER + ">", true)
-            .addField("Version", Bot.VERSION, true)
-            .addField("Server Count", String.valueOf(e.getJDA().getGuilds().size()), false)
-            .setFooter("Bot Mentioned at ")
-            .setTimestamp(Instant.now())
-            .setThumbnail(e.getJDA().getSelfUser().getAvatarUrl())
-            .setColor(0x1abc9c)
-            .build())
-            .queue();
     }
 }

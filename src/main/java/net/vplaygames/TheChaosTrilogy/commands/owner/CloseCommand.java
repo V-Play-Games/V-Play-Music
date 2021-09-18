@@ -16,9 +16,9 @@
 package net.vplaygames.TheChaosTrilogy.commands.owner;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.commands.OwnerCommand;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
+import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 
 public class CloseCommand extends OwnerCommand {
     public CloseCommand() {

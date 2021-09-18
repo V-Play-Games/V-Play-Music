@@ -31,6 +31,16 @@ public class ShiftCommand extends AbstractBotCommand {
         setMinArgs(2);
     }
 
+    static char shiftChar(char c, int shift) {
+        boolean upperCase = Character.isUpperCase(c);
+        char alphaStart = upperCase ? 'A' : 'a';
+        char alphaEnd = upperCase ? 'Z' : 'z';
+        if (c > alphaEnd || c < alphaStart)
+            return c;
+        int shifted = c + shift;
+        return (char) (shifted > alphaEnd ? shifted - alphaEnd + alphaStart : shifted);
+    }
+
     @Override
     public void onCommandRun(CommandReceivedEvent e) {
         execute(e, String.join(" ", e.getArgsFrom(2)), Long.parseLong(e.getArg(1)));
@@ -54,15 +64,5 @@ public class ShiftCommand extends AbstractBotCommand {
             }
         }
         e.send(sb.toString()).queue();
-    }
-
-    static char shiftChar(char c, int shift) {
-        boolean upperCase = Character.isUpperCase(c);
-        char alphaStart = upperCase ? 'A' : 'a';
-        char alphaEnd   = upperCase ? 'Z' : 'z';
-        if (c > alphaEnd || c < alphaStart)
-            return c;
-        int shifted = c + shift;
-        return (char) (shifted > alphaEnd ? shifted - alphaEnd + alphaStart : shifted);
     }
 }

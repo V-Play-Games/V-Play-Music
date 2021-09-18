@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Player {
-    public static Pattern referencePattern = Pattern.compile("\\$\\{([A-Za-z-]+)}");
-    public static Pattern genderBasedTextSplit = Pattern.compile("\\{m:(.+);f:(.+)}");
+    public static final Pattern referencePattern = Pattern.compile("\\$\\{([A-Za-z-]+)}");
+    public static final Pattern genderBasedTextSplit = Pattern.compile("\\{m:(.+);f:(.+)}");
     public long id;
     // -1 if not set, 0 for female, 1 for male
-    public int male;
-    public String position;
-    public Map<String, String> properties;
+    private int male;
+    private String position;
+    private Map<String, String> properties;
 
     public Player(long id) {
         this.id = id;
@@ -59,12 +59,18 @@ public class Player {
 
     public String getProperty(String key) {
         switch (key) {
-            case "rival": return this.isMale() ? "Amy" : "Toby";
-            case "heshe": return this.isMale() ? "he" : "she";
-            case "himher": return this.isMale() ? "him" : "her";
-            case "user": return this.getMention();
-            case "user-id": return String.valueOf(id);
-            default: return properties.getOrDefault(key, "null");
+            case "rival":
+                return this.isMale() ? "Amy" : "Toby";
+            case "heshe":
+                return this.isMale() ? "he" : "she";
+            case "himher":
+                return this.isMale() ? "him" : "her";
+            case "user":
+                return this.getMention();
+            case "user-id":
+                return String.valueOf(id);
+            default:
+                return properties.getOrDefault(key, "null");
         }
     }
 

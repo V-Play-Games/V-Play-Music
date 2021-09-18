@@ -35,7 +35,7 @@ public class LeaveCommand extends AbstractBotCommand {
             e.send("Leave? Leave what?").queue();
             return;
         }
-        if (Util.getListeningMembers(vc).size() != 0) {
+        if (Util.getListeningMembers(vc).isEmpty()) {
             e.send("No. I am vibin' with my people in 'ere, I can't leave 'em alone like that :(").queue();
             return;
         }

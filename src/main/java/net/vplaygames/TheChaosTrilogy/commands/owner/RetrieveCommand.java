@@ -16,12 +16,11 @@
 package net.vplaygames.TheChaosTrilogy.commands.owner;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.commands.OwnerCommand;
-import net.vplaygames.TheChaosTrilogy.core.Bot;
-import net.vplaygames.TheChaosTrilogy.core.Util;
+import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 
-import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 
 public class RetrieveCommand extends OwnerCommand {
     public RetrieveCommand() {
@@ -38,19 +37,14 @@ public class RetrieveCommand extends OwnerCommand {
         execute(e);
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void execute(CommandReceivedEvent e) {
         String[] msg = e.content.split(" ");
         switch (msg[1]) {
             case "logs":
-                File temp = Util.makeFileOf(Bot.responses, "logs-" + System.currentTimeMillis());
-                e.send("Here!").addFile(temp).queue(x -> temp.delete());
+                e.send("`java.lang.System.out`").addFile(new FileInputStream(FileDescriptor.out), "log-file.txt").queue();
                 break;
-            case "logFile":
-                e.send("logFile").addFile(Bot.logFile).queue();
-                break;
-            case "errorFile":
-                e.send("errorFile").addFile(Bot.errorFile).queue();
+            case "errors":
+                e.send("`java.lang.System.err`").addFile(new FileInputStream(FileDescriptor.err), "err-file.txt").queue();
                 break;
             default:
                 e.send("idk what you want :/").queue();

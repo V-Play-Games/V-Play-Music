@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,6 +37,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Util {
+    private Util() {
+        // Utility Class
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean canJoinVC(CommandReceivedEvent e) {
         VoiceChannel targetVC = e.getMember().getVoiceState().getChannel();
@@ -51,7 +56,7 @@ public class Util {
         if (targetVC.equals(selfVC)) {
             return true;
         }
-        if (selfVC != null && getListeningMembers(selfVC).size() != 0) {
+        if (selfVC != null && getListeningMembers(selfVC).isEmpty()) {
             e.send("I'm currently vibin' with my people in ")
                 .append(selfVC.getAsMention())
                 .append("\nC'mere or get lost :)").queue();
@@ -72,7 +77,7 @@ public class Util {
     }
 
     public static String toString(AudioTrackInfo track) {
-        return "`" + track.title + "` by `" + track.author + "` Link: <"+track.uri+">";
+        return "`" + track.title + "` by `" + track.author + "` Link: <" + track.uri + ">";
     }
 
     public static List<Member> getMembers(VoiceChannel vc) {
@@ -126,8 +131,10 @@ public class Util {
         File tor = new File(fileName);
         try (PrintStream stream = new PrintStream(tor)) {
             stream.println(toBeWritten);
-        } catch (Exception ignored) {
+        } catch (FileNotFoundException e) {
+            // ignore
         }
+        tor.deleteOnExit();
         return tor;
     }
 

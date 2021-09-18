@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
 import net.vplaygames.TheChaosTrilogy.commands.BotCommand;
 import net.vplaygames.TheChaosTrilogy.entities.*;
@@ -53,34 +52,62 @@ public class Bot {
     public static final String PREFIX = System.getenv("PREFIX");
     public static final String SUPPORT_SERVER_INVITE = "https://discord.gg/amvPsGU";
     public static final String INVALID_INPUTS = "Invalid Amount of Inputs!";
+    public static final long BOT_OWNER = 701660977258561557L;
+    public static final long logChannelId = 762950187492179995L;
+    public static final long syncChannelId = 762950187492179995L;
+    public static final AtomicLong lastCommandId = new AtomicLong(1);
+    public static final Map<String, Dialogue> dialogueMap = new HashMap<>();
+    public static final Map<String, Guess> guessMap = new HashMap<>();
+    public static final Map<String, Pokemon> pokemonMap = new HashMap<>();
+    public static final Map<String, Move> moveMap = new HashMap<>();
+    public static final Map<String, Ability> abilityMap = new HashMap<>();
+    public static final Map<String, ActionHandler> actionHandlers = new HashMap<>();
+    public static final Map<String, ButtonHandler> buttonHandlers = new HashMap<>();
+    public static final Map<String, EntityInitInfo<?>> initInfoMap = new HashMap<>();
+    public static final Map<Long, Player> players = new HashMap<>();
+    public static final Map<Long, GuessGame> guessGamePlayers = new HashMap<>();
+    public static final Map<String, AbstractBotCommand> commands = new HashMap<>();
     public static JDA jda;
     public static ScanResult scanResult;
     public static boolean closed = false;
     public static boolean rebooted = false;
     public static int syncCount;
-    public static long BOT_OWNER = 701660977258561557L;
-    public static long LOG_CHANNEL_ID = 762950187492179995L;
-    public static long SYNC_CHANNEL_ID = 762950187492179995L;
-    public static AtomicLong lastCommandId = new AtomicLong(1);
     public static Instant instantAtBoot;
     public static String lastRefresh = "never";
-    public static TextChannel logChannel;
-    public static TextChannel syncChannel;
     public static ScheduledThreadPoolExecutor timer;
-    public static Map<String, Dialogue> dialogueMap = new HashMap<>();
-    public static Map<String, Guess> guessMap = new HashMap<>();
-    public static Map<String, Pokemon> pokemonMap = new HashMap<>();
-    public static Map<String, Move> moveMap = new HashMap<>();
-    public static Map<String, Ability> abilityMap = new HashMap<>();
-    public static Map<String, ActionHandler> actionHandlers = new HashMap<>();
-    public static Map<String, ButtonHandler> buttonHandlers = new HashMap<>();
-    public static Map<String, EntityInitInfo<?>> initInfoMap = new HashMap<>();
-    public static Map<Long, Player> players = new HashMap<>();
-    public static Map<Long, GuessGame> guessGamePlayers = new HashMap<>();
-    public static Map<String, AbstractBotCommand> commands = new HashMap<>();
-    public static Map<Long, DataObject> responses = new HashMap<>();
     public static Runnable rebootTasks = () -> {
     };
+
+    static {
+        initInfoMap.putAll(getScanResult()
+            .getAllClasses()
+            .stream()
+            .filter(x -> !x.isAbstract() && !x.isInterface() && x.implementsInterface(Entity.class.getName()))
+            .map(ClassInfo::loadClass)
+            .map(c -> {
+                try {
+                    return c.getMethod("getInfo");
+                } catch (NoSuchMethodException e) {
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(m -> m.getDeclaringClass().getName(), m -> {
+                try {
+                    return (EntityInitInfo<?>) m.invoke(null);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            })));
+    }
+
+    public static TextChannel getLogChannel() {
+        return jda.getTextChannelById(logChannelId);
+    }
+
+    public static TextChannel getSyncChannel() {
+        return jda.getTextChannelById(syncChannelId);
+    }
 
     public static JDA getJda() {
         return jda;
@@ -99,8 +126,6 @@ public class Bot {
 
     public static void init() {
         syncCount = 0;
-        setLogChannel(jda.getTextChannelById(LOG_CHANNEL_ID));
-        setSyncChannel(jda.getTextChannelById(SYNC_CHANNEL_ID));
         initData();
         startTimer();
         loadCommands(jda);
@@ -110,50 +135,15 @@ public class Bot {
         //logChannel.sendMessage("I am ready for anything!\n\t-Morty, Johto Gym Leader, 2020").queue();
     }
 
-    public static void setLogChannel(TextChannel c) {
-        if (c != null) {
-            LOG_CHANNEL_ID = c.getIdLong();
-            logChannel = c;
-        }
-    }
-
-    public static void setSyncChannel(TextChannel c) {
-        if (c != null) {
-            LOG_CHANNEL_ID = c.getIdLong();
-            syncChannel = c;
-        }
-    }
-
     public static void initData() {
-        (initInfoMap = getScanResult()
-            .getAllClasses()
-            .stream()
-            .filter(x -> !x.isAbstract() && !x.isInterface() && x.implementsInterface(Entity.class.getName()))
-            .map(ClassInfo::loadClass)
-            .map(c -> {
-                try {
-                    return c.getMethod("getInfo");
-                } catch (NoSuchMethodException e) {
-                    return null;
-                }
-            })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toMap(m -> m.getDeclaringClass().getName(), m -> {
-                try {
-                    return (EntityInitInfo<?>) m.invoke(null);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            })))
-            .values()
-            .forEach(Bot::loadEntity);
+        initInfoMap.values().forEach(Bot::loadEntity);
     }
 
     public static <T extends Entity> void loadEntity(EntityInitInfo<T> info) {
         try (InputStream stream = info.fileUrl.openStream()) {
             DataArray.fromJson(stream)
                 .stream(DataArray::getObject)
-                .filter(data -> data.keys().size() != 0)
+                .filter(data -> data.keys().isEmpty())
                 .map(info.entityConstructor)
                 .forEach(entity -> info.entityMap.put(entity.getId(), entity));
             System.out.println("Loaded " + info.fileUrl);
@@ -168,9 +158,9 @@ public class Bot {
             .scheduleWithFixedDelay(() -> {
                 syncCount++;
                 System.out.println("Syncing data [" + syncCount + "]");
-                syncChannel.sendMessage("Sync [" + syncCount + "]").queue();
-                syncChannel.sendMessage("logFile").addFile(logFile).queue();
-                syncChannel.sendMessage("errorFile").addFile(errorFile).queue();
+                getSyncChannel().sendMessage("Sync [" + syncCount + "]").queue();
+                getSyncChannel().sendMessage("logFile").addFile(logFile).queue();
+                getSyncChannel().sendMessage("errorFile").addFile(errorFile).queue();
             }, 0, 20, TimeUnit.MINUTES);
     }
 
@@ -199,7 +189,7 @@ public class Bot {
 
     @SuppressWarnings("unchecked")
     public static <T> void loadAllInstancesOf(Class<T> _interface, Consumer<T> newInstanceProcessor) {
-        HashMap<Class<?>, Throwable> errors = new HashMap<>();
+        Map<Class<?>, Exception> errors = new HashMap<>();
         getScanResult()
             .getAllClasses()
             .stream()
@@ -208,7 +198,7 @@ public class Bot {
                 try {
                     T newObject = (T) x.loadClass().getConstructor().newInstance();
                     newInstanceProcessor.accept(newObject);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     errors.put(x.loadClass(), e);
                 }
             });

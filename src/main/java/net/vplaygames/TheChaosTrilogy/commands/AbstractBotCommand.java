@@ -25,29 +25,24 @@ import net.vplaygames.TheChaosTrilogy.core.Ratelimit;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static net.vplaygames.TheChaosTrilogy.core.Bot.INVALID_INPUTS;
 
 public abstract class AbstractBotCommand extends CommandData implements BotCommand {
+    public final Map<Long, Ratelimit> ratelimited;
     private int minArgs;
     private int maxArgs;
     private long cooldown;
-    protected final String name;
-    public final HashMap<Long, Ratelimit> ratelimited;
 
     public AbstractBotCommand(String name, String description, String... aliases) {
         super(name, description);
-        this.name = name;
         this.ratelimited = new HashMap<>();
         Bot.commands.put(name, this);
         for (String alias : aliases) {
             Bot.commands.put(alias, this);
         }
-    }
-
-    public void setMinArgs(int minArgs) {
-        this.minArgs = minArgs;
     }
 
     public int getMaxArgs() {
@@ -60,6 +55,10 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
 
     public int getMinArgs() {
         return minArgs;
+    }
+
+    public void setMinArgs(int minArgs) {
+        this.minArgs = minArgs;
     }
 
     public void run(CommandReceivedEvent e) {
@@ -94,13 +93,15 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
         });
     }
 
-    public void onButtonClick(ButtonClickEvent e, String input) {}
+    public void onButtonClick(ButtonClickEvent e, String input) {
+    }
 
     public abstract void onCommandRun(CommandReceivedEvent e) throws Exception;
 
     public abstract void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) throws Exception;
 
-    public void finalizeCommand(Command c) {}
+    public void finalizeCommand(Command c) {
+    }
 
     public void onRatelimit(CommandReceivedEvent e) {
         Ratelimit rl = ratelimited.get(e.getAuthor().getIdLong());
@@ -123,7 +124,8 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
         return cooldown + inflictedAt - System.currentTimeMillis();
     }
 
-    public void onHelpNeeded(CommandReceivedEvent e) {}
+    public void onHelpNeeded(CommandReceivedEvent e) {
+    }
 
     public boolean runChecks(CommandReceivedEvent e) {
         return false;
@@ -134,7 +136,7 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
         return Bot.PREFIX + name;
     }
 
-    public HashMap<Long, Ratelimit> getRateLimited() {
+    public Map<Long, Ratelimit> getRateLimited() {
         return ratelimited;
     }
 

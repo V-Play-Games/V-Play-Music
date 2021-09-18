@@ -3,7 +3,6 @@ package net.vplaygames.TheChaosTrilogy.core;
 import java.util.List;
 
 public class Condition {
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public static boolean doesFulfill(List<String> conditions, Player player) {
         return conditions.stream()
             .map(s -> {
@@ -16,10 +15,12 @@ public class Condition {
                         break;
                     case "return":
                         tor = Boolean.parseBoolean(args[0]);
+                    default:
+                        tor = false;
                 }
                 return tor;
             })
             .reduce(Boolean::logicalAnd)
-            .get();
+            .orElse(false);
     }
 }

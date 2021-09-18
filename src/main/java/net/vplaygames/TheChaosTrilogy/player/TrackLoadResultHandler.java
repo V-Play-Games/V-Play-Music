@@ -10,16 +10,18 @@ public class TrackLoadResultHandler implements AudioLoadResultHandler {
     GuildAudioManager manager;
     CommandReceivedEvent event;
     String trackUrl;
+    boolean isSearched;
 
-    public TrackLoadResultHandler(CommandReceivedEvent event, String trackUrl, GuildAudioManager manager) {
+    public TrackLoadResultHandler(CommandReceivedEvent event, String trackUrl, GuildAudioManager manager, boolean isSearched) {
+        this.isSearched = isSearched;
         this.event = event;
         this.trackUrl = trackUrl;
         this.manager = manager;
     }
 
-    public static void load(CommandReceivedEvent event, String trackUrl, GuildAudioManager manager) {
+    public static void load(CommandReceivedEvent event, String trackUrl, GuildAudioManager manager, boolean isSearched) {
         PlayerManager.getInstance()
-            .loadItemOrdered(manager, trackUrl, new TrackLoadResultHandler(event, trackUrl, manager));
+            .loadItemOrdered(manager, trackUrl, new TrackLoadResultHandler(event, trackUrl, manager, isSearched));
     }
 
     public CommandReceivedEvent getEvent() {
@@ -37,10 +39,14 @@ public class TrackLoadResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-        if (playlist.isSearchResult()) {
+        if (isSearched) {
             trackLoaded(playlist.getTracks().get(0));
         } else {
-            manager.queue(event, playlist);
+            if (playlist.isSearchResult()) {
+                trackLoaded(playlist.getTracks().get(0));
+            } else {
+                manager.queue(event, playlist);
+            }
         }
     }
 

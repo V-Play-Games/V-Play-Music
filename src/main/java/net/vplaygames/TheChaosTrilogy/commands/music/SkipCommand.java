@@ -28,7 +28,7 @@ public class SkipCommand extends AbstractBotCommand {
         }
         GuildAudioManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
         if (manager.getPlayingTrack() == null) {
-            e.send("There's nothing playin' in 'ere. Party's over. Let's have an after-party whaddaya think?").queue();
+            e.send("There's nothin' playin' in 'ere. Party's over. Let's have an after-party whaddaya think?").queue();
             return;
         }
         if (Util.getListeningMembers(manager.getConnectedVoiceChannel()).size() == 1) {

@@ -1,5 +1,6 @@
 package net.vplaygames.TheChaosTrilogy.player;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import net.dv8tion.jda.api.entities.Guild;
@@ -25,10 +26,16 @@ public class PlayerManager extends DefaultAudioPlayerManager {
     }
 
     public GuildAudioManager getMusicManager(Guild guild) {
-        return managers.computeIfAbsent(guild.getIdLong(), guildId -> new GuildAudioManager(this, guild.getAudioManager()));
+        return managers.computeIfAbsent(guild.getIdLong(),
+            guildId -> ((GuildAudioManager) createPlayer()).setAudioManager(guild.getAudioManager()));
     }
 
-    public void loadAndPlay(CommandReceivedEvent e, String trackUrl) {
-        TrackLoadResultHandler.load(e, trackUrl, getMusicManager(e.getGuild()));
+    @Override
+    protected AudioPlayer constructPlayer() {
+        return new GuildAudioManager(this);
+    }
+
+    public void loadAndPlay(CommandReceivedEvent e, String trackUrl, boolean isSearched) {
+        TrackLoadResultHandler.load(e, trackUrl, getMusicManager(e.getGuild()), isSearched);
     }
 }

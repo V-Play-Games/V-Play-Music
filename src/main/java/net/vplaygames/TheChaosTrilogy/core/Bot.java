@@ -50,8 +50,8 @@ public class Bot {
     public static final String VERSION = "0.0.1";
     public static JDA jda;
     public static ScanResult scanResult;
-    public static final File logFile = new File("src/main/resources/logFile.txt");
-    public static final File errorFile = new File("src/main/resources/errorFile.txt");
+    public static final File logFile = new File("logFile.txt");
+    public static final File errorFile = new File("errorFile.txt");
     public static boolean closed = false;
     public static boolean rebooted = false;
     public static int syncCount;
@@ -62,7 +62,7 @@ public class Bot {
     public static Instant instantAtBoot;
     public static String lastRefresh = "never";
     public static final String TOKEN = System.getenv("TOKEN");
-    public static final String PREFIX = "v!";
+    public static final String PREFIX = "test!";
     public static final String SUPPORT_SERVER_INVITE = "https://discord.gg/amvPsGU";
     public static final String INVALID_INPUTS = "Invalid Amount of Inputs!";
     public static TextChannel logChannel;
@@ -147,16 +147,15 @@ public class Bot {
 
     public static <T extends Entity> void loadEntity(EntityInitInfo<T> info) {
         try (Reader r = new FileReader(info.entityFile)) {
-            System.out.println("Loading "+info.entityFile);
             DataArray.fromJson(r)
                 .stream(DataArray::getObject)
                 .filter(data -> data.keys().size() != 0)
                 .map(info.entityConstructor)
                 .forEach(entity -> info.entityMap.put(entity.getId(), entity));
+            System.out.println("Loaded "+info.entityFile);
         } catch (IOException e) {
-//            throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
-
     }
 
     public static void startTimer() {

@@ -32,9 +32,8 @@ import net.vplaygames.TheChaosTrilogy.entities.*;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,10 +47,14 @@ import java.util.stream.Collectors;
 
 public class Bot {
     public static final String VERSION = "0.0.1";
-    public static JDA jda;
-    public static ScanResult scanResult;
     public static final File logFile = new File("logFile.txt");
     public static final File errorFile = new File("errorFile.txt");
+    public static final String TOKEN = System.getenv("TOKEN");
+    public static final String PREFIX = "test!";
+    public static final String SUPPORT_SERVER_INVITE = "https://discord.gg/amvPsGU";
+    public static final String INVALID_INPUTS = "Invalid Amount of Inputs!";
+    public static JDA jda;
+    public static ScanResult scanResult;
     public static boolean closed = false;
     public static boolean rebooted = false;
     public static int syncCount;
@@ -61,10 +64,6 @@ public class Bot {
     public static AtomicLong lastCommandId = new AtomicLong(1);
     public static Instant instantAtBoot;
     public static String lastRefresh = "never";
-    public static final String TOKEN = System.getenv("TOKEN");
-    public static final String PREFIX = "test!";
-    public static final String SUPPORT_SERVER_INVITE = "https://discord.gg/amvPsGU";
-    public static final String INVALID_INPUTS = "Invalid Amount of Inputs!";
     public static TextChannel logChannel;
     public static TextChannel syncChannel;
     public static ScheduledThreadPoolExecutor timer;
@@ -146,13 +145,13 @@ public class Bot {
     }
 
     public static <T extends Entity> void loadEntity(EntityInitInfo<T> info) {
-        try (Reader r = new FileReader(info.entityFile)) {
-            DataArray.fromJson(r)
+        try (InputStream stream = info.fileUrl.openStream()) {
+            DataArray.fromJson(stream)
                 .stream(DataArray::getObject)
                 .filter(data -> data.keys().size() != 0)
                 .map(info.entityConstructor)
                 .forEach(entity -> info.entityMap.put(entity.getId(), entity));
-            System.out.println("Loaded "+info.entityFile);
+            System.out.println("Loaded " + info.fileUrl);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

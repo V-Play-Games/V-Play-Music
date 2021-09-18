@@ -4,8 +4,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
-import java.io.File;
-
 public class Move implements Entity {
     int pp;
     int accuracy;
@@ -38,8 +36,7 @@ public class Move implements Entity {
     }
 
     public static EntityInitInfo<Move> getInfo() {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("move.json").toString()),
-            Move::new, Bot.moveMap);
+        return new EntityInitInfo<>(Move.class.getResource("move.json"), Move::new, Bot.moveMap);
     }
 
     public int getPP() {

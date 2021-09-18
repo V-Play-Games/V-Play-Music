@@ -3,8 +3,6 @@ package net.vplaygames.TheChaosTrilogy.entities;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 
-import java.io.File;
-
 public class Guess implements Entity {
     private String id;
     private String name;
@@ -17,8 +15,7 @@ public class Guess implements Entity {
     }
 
     public static EntityInitInfo<Guess> getInfo() {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("guess.json").toString()),
-            Guess::new, Bot.guessMap);
+        return new EntityInitInfo<>(Guess.class.getResource("guess.json"), Guess::new, Bot.guessMap);
     }
 
     public String getId() {

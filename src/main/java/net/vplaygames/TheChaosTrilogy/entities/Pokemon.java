@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,8 +45,7 @@ public class Pokemon implements Entity {
     }
 
     public static EntityInitInfo<Pokemon> getInfo() {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("pokemon.json").toString()),
-            Pokemon::new, Bot.pokemonMap);
+        return new EntityInitInfo<>(Pokemon.class.getResource("pokemon.json"), Pokemon::new, Bot.pokemonMap);
     }
 
     public List<AbilitySlot> getAbilities() {

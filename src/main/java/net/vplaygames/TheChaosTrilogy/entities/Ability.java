@@ -4,8 +4,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
-import java.io.File;
-
 public class Ability implements Entity {
     String id;
     String name;
@@ -20,8 +18,7 @@ public class Ability implements Entity {
     }
 
     public static EntityInitInfo<Ability> getInfo() {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("ability.json").toString()),
-            Ability::new, Bot.abilityMap);
+        return new EntityInitInfo<>(Ability.class.getResource("ability.json"), Ability::new, Bot.abilityMap);
     }
 
     public String getName() {

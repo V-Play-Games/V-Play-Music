@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.core.*;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -26,8 +25,7 @@ public class Dialogue implements Entity {
     }
 
     public static EntityInitInfo<Dialogue> getInfo() {
-        return new EntityInitInfo<>(new File(Ability.class.getResource("dialogue.json").toString()),
-            Dialogue::new, Bot.dialogueMap);
+        return new EntityInitInfo<>(Dialogue.class.getResource("dialogue.json"), Dialogue::new, Bot.dialogueMap);
     }
 
     public String getId() {

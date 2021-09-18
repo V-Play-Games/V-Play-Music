@@ -42,6 +42,8 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
         this.buffer = ByteBuffer.allocate(1024);
         this.frame = new MutableAudioFrame();
         this.frame.setBuffer(buffer);
+        this.loop = new AtomicBoolean(false);
+        this.loopQueue = new AtomicBoolean(true);
     }
 
     public boolean isLoop() {

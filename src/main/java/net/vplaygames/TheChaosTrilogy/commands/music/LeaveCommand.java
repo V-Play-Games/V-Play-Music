@@ -1,9 +1,7 @@
 package net.vplaygames.TheChaosTrilogy.commands.music;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.managers.AudioManager;
 import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
@@ -26,12 +24,11 @@ public class LeaveCommand extends AbstractBotCommand {
     }
 
     public void execute(CommandReceivedEvent e) {
-        if (e.getArgs().size() == 2 && e.getArg(1).equals("all") && e.getAuthor().getIdLong() == Bot.BOT_OWNER) {
-            e.getJDA()
-                .getGuilds()
-                .stream()
-                .map(Guild::getAudioManager)
-                .forEach(AudioManager::closeAudioConnection);
+        if (e.getArgs().size() == 2 && e.getArg(1).equals("all")
+            && e.getAuthor().getIdLong() == Bot.BOT_OWNER) {
+            e.getJDA().getGuilds().forEach(guild -> e.getJDA().getDirectAudioController().disconnect(guild));
+            e.send("DC'ed from everywhere, just for you senpai ;)").queue();
+            return;
         }
         VoiceChannel vc = e.getSelfMember().getVoiceState().getChannel();
         if (vc == null) {

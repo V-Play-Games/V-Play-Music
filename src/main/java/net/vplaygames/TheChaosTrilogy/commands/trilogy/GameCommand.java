@@ -12,7 +12,7 @@ public class GameCommand extends AbstractBotCommand {
 
     @Override
     public boolean runChecks(CommandReceivedEvent e) {
-        if (Bot.players.containsKey(e.getAuthor().getIdLong())) {
+        if (!Bot.players.containsKey(e.getAuthor().getIdLong())) {
             e.send("Please start your journey with `v!start` command first").queue();
             return false;
         }

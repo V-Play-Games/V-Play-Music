@@ -52,7 +52,7 @@ public class MemeCommand extends AbstractBotCommand {
 
     @Override
     public boolean runChecks(CommandReceivedEvent e) {
-        if (e.isFromGuild()) {
+        if (!e.isFromGuild()) {
             e.send("Sorry, but this command cannot be used in DMs.").queue();
             return false;
         }

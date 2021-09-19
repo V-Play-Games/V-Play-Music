@@ -68,7 +68,7 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
             onRatelimit(e);
             return;
         }
-        if (runChecks(e)) {
+        if (!runChecks(e)) {
             return;
         }
         int args = e.getArgs() != null ? e.getArgs().size() - 1 : 0;
@@ -128,7 +128,7 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
     }
 
     public boolean runChecks(CommandReceivedEvent e) {
-        return false;
+        return true;
     }
 
     @Override

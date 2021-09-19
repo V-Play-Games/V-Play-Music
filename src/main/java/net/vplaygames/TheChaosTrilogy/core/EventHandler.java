@@ -123,7 +123,11 @@ public class EventHandler extends ListenerAdapter {
 
     @Override
     public void onButtonClick(@Nonnull ButtonClickEvent e) {
-        Bot.buttonHandlers.get(Util.getMethod(e.getComponentId()))
-            .handle(e, Util.getArgs(e.getComponentId()).split(":"));
+        String method = Util.getMethod(e.getComponentId());
+        String[] args = Util.getArgs(e.getComponentId()).split(":");
+        ButtonHandler handler = Bot.buttonHandlers.get(method);
+        if (handler.isValidClick(e, args)) {
+            handler.handle(e, args);
+        }
     }
 }

@@ -34,8 +34,8 @@ public abstract class OwnerCommand extends AbstractBotCommand {
     public boolean runChecks(CommandReceivedEvent e) {
         if (e.getAuthor().getIdLong() != Bot.BOT_OWNER) {
             e.send("You do not have the permission to do that!").queue();
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }

@@ -24,10 +24,21 @@ public class LeaveCommand extends AbstractBotCommand {
     }
 
     public void execute(CommandReceivedEvent e) {
-        if (e.getArgs().size() == 2 && e.getArg(1).equals("all")
-            && e.getAuthor().getIdLong() == Bot.BOT_OWNER) {
-            e.getJDA().getGuilds().forEach(guild -> e.getJDA().getDirectAudioController().disconnect(guild));
-            e.send("DC'ed from everywhere, just for you senpai ;)").queue();
+        if (e.getArgs().size() == 2 && e.getAuthor().getIdLong() == Bot.BOT_OWNER) {
+            if (e.getArg(1).equals("all")) {
+                e.getJDA().getGuilds().forEach(guild -> e.getJDA().getDirectAudioController().disconnect(guild));
+                e.send("DC'ed from everywhere, just for you senpai ;)").queue();
+            } else if (e.getArg(1).equals("this")) {
+                VoiceChannel vc = e.getSelfMember().getVoiceState().getChannel();
+                if (vc != null) {
+                    e.getJDA().getDirectAudioController().disconnect(e.getGuild());
+                    e.send("DC'ed from " + vc.toString() + ", just for you senpai ;)").queue();
+                } else {
+                    e.send("Left the inexistent vc I was connected in smh").queue();
+                }
+            } else {
+                e.send("wut").queue();
+            }
             return;
         }
         VoiceChannel vc = e.getSelfMember().getVoiceState().getChannel();

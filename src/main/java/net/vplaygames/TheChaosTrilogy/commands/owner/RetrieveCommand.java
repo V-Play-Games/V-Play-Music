@@ -15,12 +15,17 @@
  */
 package net.vplaygames.TheChaosTrilogy.commands.owner;
 
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.vplaygames.TheChaosTrilogy.commands.OwnerCommand;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
+import net.vplaygames.TheChaosTrilogy.core.Util;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.util.Objects;
 
 public class RetrieveCommand extends OwnerCommand {
     public RetrieveCommand() {
@@ -45,6 +50,25 @@ public class RetrieveCommand extends OwnerCommand {
                 break;
             case "errors":
                 e.send("`java.lang.System.err`").addFile(new FileInputStream(FileDescriptor.err), "err-file.txt").queue();
+                break;
+            case "vc":
+                VoiceChannel vc0 = e.getSelfMember().getVoiceState().getChannel();
+                e.getChannel().sendMessage(vc0.toString()
+                    + "\nConnected Members: " + Util.getListeningMembers(vc0) + "\n"
+                    + vc0.getGuild().getOwner().toString()).queue();
+                break;
+            case "vc-all":
+                e.getJDA()
+                    .getGuilds()
+                    .stream()
+                    .map(guild -> guild.getMember(e.getJDA().getSelfUser()))
+                    .map(Member::getVoiceState)
+                    .map(GuildVoiceState::getChannel)
+                    .filter(Objects::nonNull)
+                    .map(vc -> vc.toString()
+                        + "\nConnected Members: " + Util.getListeningMembers(vc) + "\n"
+                        + vc.getGuild().getOwner().toString())
+                    .forEach(s -> e.getChannel().sendMessage(s).queue());
                 break;
             default:
                 e.send("idk what you want :/").queue();

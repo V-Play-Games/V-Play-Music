@@ -147,7 +147,7 @@ public class Bot {
                 .map(info.entityConstructor)
                 .forEach(entity -> info.entityMap.put(entity.getId(), entity));
             System.out.println("Loaded " + info.fileUrl);
-        } catch (IOException e) {
+        } catch (Exception e) {
 //            throw new RuntimeException(e);
         }
     }

@@ -17,9 +17,10 @@ import net.vplaygames.TheChaosTrilogy.core.Sender;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,7 +29,7 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
     long guildId;
     ByteBuffer buffer;
     MutableAudioFrame frame;
-    List<Member> skipVotes;
+    Set<Long> skipVotes;
     Queue<AudioTrack> queue;
     AtomicBoolean loop;
     AtomicBoolean loopQueue;
@@ -38,7 +39,7 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
         super(manager);
         this.queue = new LinkedBlockingQueue<>();
         this.addListener(this);
-        this.skipVotes = new ArrayList<>();
+        this.skipVotes = new HashSet<>();
         this.buffer = ByteBuffer.allocate(1024);
         this.frame = new MutableAudioFrame();
         this.frame.setBuffer(buffer);
@@ -88,18 +89,11 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
     }
 
     public void skip(CommandReceivedEvent e) {
-        if (skipVotes.contains(e.getMember())) {
-            if (!checkSkip()) {
-                e.send("You have already voted to skip! Current votes: ")
-                    .append(skipVotes.size() + "/" + (listeningMemberCount - 1))
-                    .queue();
-            }
-        }
-        skipVotes.add(e.getMember());
+        boolean added = skipVotes.add(e.getMember().getIdLong());
         if (checkSkip()) {
             e.send("Successfully skipped!").queue();
         } else {
-            e.send("You have voted to skip! Current votes: ")
+            e.send("You have " + (added ? "" : "already ") + "voted to skip! Current votes: ")
                 .append(skipVotes.size() + "/" + (listeningMemberCount - 1))
                 .queue();
         }
@@ -110,14 +104,12 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
         if (vc == null) {
             return false;
         }
-        if (skipVotes.isEmpty()) {
-            return false;
-        }
         List<Member> listeningMembers = Util.getListeningMembers(vc);
-        if (listeningMembers.size() > 2 || skipVotes.size() != 1) {
-            listeningMemberCount = listeningMembers.size();
-            listeningMembers.removeAll(skipVotes);
-            if (listeningMembers.size() > 1) {
+        listeningMemberCount = listeningMembers.size();
+        if (listeningMemberCount > 2) {
+            if (listeningMembers.stream()
+                .filter(m -> !skipVotes.contains(m.getIdLong()))
+                .count() > 1) {
                 return false;
             }
         }
@@ -125,7 +117,7 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
         return true;
     }
 
-    public List<Member> getSkipVotes() {
+    public Set<Long> getSkipVotes() {
         return skipVotes;
     }
 

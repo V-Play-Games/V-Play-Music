@@ -16,30 +16,20 @@
 package net.vplaygames.TheChaosTrilogy.commands.general;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
+import net.vplaygames.TheChaosTrilogy.commands.SharedImplementationCommand;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 
-public class InviteCommand extends AbstractBotCommand {
+public class InviteCommand extends SharedImplementationCommand {
     public InviteCommand() {
         super("invite", "sends a link to add the bot in the server and other links");
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    void execute(CommandReceivedEvent e) {
+    public void execute(CommandReceivedEvent e) {
         e.send(new EmbedBuilder()
             .setDescription(
-                "[Add the bot to your server](" + e.getJDA().getInviteUrl() + "&scope=bot%20applications.commands)\n" +
+                "[Add the bot to your server](" + e.getJDA().getInviteUrl() + "+applications.commands)\n" +
                     "[Join the bot's support server](" + Bot.SUPPORT_SERVER_INVITE + ")"
             ).build(), "invite URLs").queue();
     }

@@ -1,16 +1,15 @@
 package net.vplaygames.TheChaosTrilogy.commands.fun;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
+import net.vplaygames.TheChaosTrilogy.commands.SharedImplementationCommand;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.core.GuessGame;
 
 import javax.annotation.Nonnull;
 
-public class GuessCommand extends AbstractBotCommand {
+public class GuessCommand extends SharedImplementationCommand {
     public GuessCommand() {
         super("guess", "Guess a Pokemon name by the given description of it");
         Bot.jda.addEventListener(new ListenerAdapter() {
@@ -22,15 +21,6 @@ public class GuessCommand extends AbstractBotCommand {
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e);
-    }
-
     public void execute(CommandReceivedEvent e) {
         GuessGame game = new GuessGame(e);
         e.send("You have started a new guess game!\nGuess the Pokemon based on its given description in 30 seconds or less!\n> " + game.getGuess().getDescription()).queue();

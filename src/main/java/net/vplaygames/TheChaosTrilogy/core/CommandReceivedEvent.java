@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
 
@@ -49,7 +49,7 @@ public class CommandReceivedEvent implements Sender {
     public Throwable trouble;
     private List<String> args;
 
-    public CommandReceivedEvent(GuildMessageReceivedEvent e, String[] args, AbstractBotCommand command) {
+    public CommandReceivedEvent(MessageReceivedEvent e, String[] args, AbstractBotCommand command) {
         this(e.getJDA(),
             e.getMessageIdLong(),
             e.getChannel(),
@@ -72,7 +72,7 @@ public class CommandReceivedEvent implements Sender {
             e.getGuild(),
             e.getUser(),
             e.getMember(),
-            null,
+            e.getCommandString(),
             command,
             e.getTimeCreated(),
             true);
@@ -104,7 +104,7 @@ public class CommandReceivedEvent implements Sender {
         this.selfMember = guild.getMember(api.getSelfUser());
     }
 
-    public static void run(GuildMessageReceivedEvent e, String[] args, AbstractBotCommand command) {
+    public static void run(MessageReceivedEvent e, String[] args, AbstractBotCommand command) {
         command.run(new CommandReceivedEvent(e, args, command));
     }
 
@@ -214,8 +214,8 @@ public class CommandReceivedEvent implements Sender {
                 .setDescription("Error: " + (trouble == null
                     ? "None"
                     : trouble.getClass() + ": " + trouble.getMessage() + "\n\t at " + trouble.getStackTrace()[0]) +
-                    "\nUsed in " + (!isFromGuild() ? "the DM of " : "#" + getChannel().getName() + "(<#" + getChannel().getId() + ">) by ")
-                    + getAuthor().getAsTag() + " (" + getAuthor().getAsMention() + ")")
+                    "\nUsed in " + (!isFromGuild() ? "the DM of " : "#" + getChannel().toString() + " by ")
+                    + getAuthor().toString())
                 .addField("Input", content.length() > 1024 ? content.substring(0, 1021) + "..." : content, false)
                 .addField("Output", output.length() > 1024 ? output.substring(0, 1021) + "..." : output, false)
                 .build())

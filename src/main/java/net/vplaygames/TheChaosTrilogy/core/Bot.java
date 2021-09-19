@@ -31,7 +31,6 @@ import net.vplaygames.TheChaosTrilogy.entities.*;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashMap;
@@ -96,7 +95,7 @@ public class Bot {
                 try {
                     return (EntityInitInfo<?>) m.invoke(null);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new InternalError(e);
                 }
             })));
     }
@@ -143,12 +142,12 @@ public class Bot {
         try (InputStream stream = info.fileUrl.openStream()) {
             DataArray.fromJson(stream)
                 .stream(DataArray::getObject)
-                .filter(data -> data.keys().isEmpty())
+                .filter(data -> !data.keys().isEmpty())
                 .map(info.entityConstructor)
                 .forEach(entity -> info.entityMap.put(entity.getId(), entity));
             System.out.println("Loaded " + info.fileUrl);
         } catch (Exception e) {
-//            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 

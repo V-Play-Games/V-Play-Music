@@ -16,28 +16,18 @@
 package net.vplaygames.TheChaosTrilogy.commands.general;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
+import net.vplaygames.TheChaosTrilogy.commands.SharedImplementationCommand;
 import net.vplaygames.TheChaosTrilogy.core.Bot;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
-public class UptimeCommand extends AbstractBotCommand {
+public class UptimeCommand extends SharedImplementationCommand {
     public UptimeCommand() {
         super("uptime", "Gives the uptime of the bot i.e. the amount of time the bot has been online since last startup");
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    void execute(CommandReceivedEvent e) {
+    public void execute(CommandReceivedEvent e) {
         e.send(new EmbedBuilder()
             .addField("Uptime", Util.msToString(System.currentTimeMillis() - Bot.instantAtBoot.toEpochMilli()) + " (" + (System.currentTimeMillis() - Bot.instantAtBoot.toEpochMilli()) + " ms)", false)
             .setFooter("Last refresh: " + Bot.lastRefresh + "\nLast boot ")

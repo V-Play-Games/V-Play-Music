@@ -23,9 +23,8 @@ import net.vplaygames.TheChaosTrilogy.commands.OwnerCommand;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 import net.vplaygames.TheChaosTrilogy.core.Util;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class RetrieveCommand extends OwnerCommand {
     public RetrieveCommand() {
@@ -43,18 +42,20 @@ public class RetrieveCommand extends OwnerCommand {
     }
 
     public void execute(CommandReceivedEvent e) {
-        String[] msg = e.content.split(" ");
-        switch (msg[1]) {
-            case "logs":
-                e.send("`java.lang.System.out`").addFile(new FileInputStream(FileDescriptor.out), "log-file.txt").queue();
-                break;
-            case "errors":
-                e.send("`java.lang.System.err`").addFile(new FileInputStream(FileDescriptor.err), "err-file.txt").queue();
-                break;
+        switch (e.getArg(1)) {
+//            case "logs":
+//                e.send("`java.lang.System.out`").addFile(new FileInputStream((FileDescriptor.out)), "log-file.txt").queue();
+//                break;
+//            case "errors":
+//                e.send("`java.lang.System.err`").addFile(new FileInputStream(FileDescriptor.err), "err-file.txt").queue();
+//                break;
             case "vc":
                 VoiceChannel vc0 = e.getSelfMember().getVoiceState().getChannel();
-                e.getChannel().sendMessage(vc0.toString()
-                    + "\nConnected Members: " + Util.getListeningMembers(vc0) + "\n"
+                e.send(vc0 == null ? null : vc0.toString()
+                    + "\nConnected Members: " + Util.getListeningMembers(vc0)
+                    .stream()
+                    .map(Member::getUser)
+                    .collect(Collectors.toList()) + "\n"
                     + vc0.getGuild().getOwner().toString()).queue();
                 break;
             case "vc-all":
@@ -66,9 +67,12 @@ public class RetrieveCommand extends OwnerCommand {
                     .map(GuildVoiceState::getChannel)
                     .filter(Objects::nonNull)
                     .map(vc -> vc.toString()
-                        + "\nConnected Members: " + Util.getListeningMembers(vc) + "\n"
+                        + "\nConnected Members: " + Util.getListeningMembers(vc)
+                        .stream()
+                        .map(Member::getUser)
+                        .collect(Collectors.toList()) + "\n"
                         + vc.getGuild().getOwner().toString())
-                    .forEach(s -> e.getChannel().sendMessage(s).queue());
+                    .forEach(s -> e.send(s).queue());
                 break;
             default:
                 e.send("idk what you want :/").queue();

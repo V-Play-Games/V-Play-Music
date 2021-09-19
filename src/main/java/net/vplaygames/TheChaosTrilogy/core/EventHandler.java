@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
 import org.jetbrains.annotations.NotNull;
@@ -46,23 +46,25 @@ public class EventHandler extends ListenerAdapter {
         return selfMention == null ? selfMention = Pattern.compile("<@!?>") : selfMention;
     }
 
-    public static void botPingedEvent(GuildMessageReceivedEvent e) {
-        e.getChannel().sendMessage("Prefix: " + Bot.PREFIX).setEmbeds(new EmbedBuilder()
-            .setAuthor("V Play Games Bot Info")
-            .setDescription("A Pokemon-related bot created, developed & maintained by <@" + Bot.BOT_OWNER + ">")
-            .addField("Developer", "<@" + Bot.BOT_OWNER + ">", true)
-            .addField("Version", Bot.VERSION, true)
-            .addField("Server Count", String.valueOf(e.getJDA().getGuilds().size()), false)
-            .setFooter("Bot Mentioned at ")
-            .setTimestamp(Instant.now())
-            .setThumbnail(e.getJDA().getSelfUser().getAvatarUrl())
-            .setColor(0x1abc9c)
-            .build())
+    public static void botPingedEvent(MessageReceivedEvent e) {
+        e.getChannel()
+            .sendMessage("Prefix: " + Bot.PREFIX)
+            .setEmbeds(new EmbedBuilder()
+                .setAuthor("V Play Games Bot Info")
+                .setDescription("A Pokemon-related discord bot created, developed & maintained by")
+                .appendDescription(" V Play Games aka VPG (<@" + Bot.BOT_OWNER + ">)")
+                .addField("Developer", "<@" + Bot.BOT_OWNER + ">", true)
+                .addField("Version", Bot.VERSION, true)
+                .addField("Server Count", String.valueOf(e.getJDA().getGuilds().size()), false)
+                .setTimestamp(Instant.now())
+                .setThumbnail(e.getJDA().getSelfUser().getAvatarUrl())
+                .setColor(0x1abc9c)
+                .build())
             .queue();
     }
 
     @Override
-    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent e) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent e) {
         try {
             if (Bot.closed) {
                 if (e.getMessage().getContentRaw().equalsIgnoreCase("v!activate")
@@ -70,7 +72,7 @@ public class EventHandler extends ListenerAdapter {
                     Bot.closed = false;
                     e.getChannel().sendMessage("Thanks for activating me again!").queue();
                 }
-            } else if (!e.getAuthor().isBot() && e.getChannel().canTalk()) {
+            } else if (!e.getAuthor().isBot() && (!e.isFromGuild() || ((TextChannel) e.getChannel()).canTalk())) {
                 Message message = e.getMessage();
                 String content = message.getContentRaw();
                 String[] args = content.split("[\n\\s]+");
@@ -97,10 +99,11 @@ public class EventHandler extends ListenerAdapter {
                     Bot.closed = false;
                     e.getChannel().sendMessage("Thanks for activating me again!").queue();
                 }
-            } else if (!e.getChannel().getType().isGuild() || ((TextChannel) e.getChannel()).canTalk()) {
+            } else {
                 AbstractBotCommand command = Bot.commands.get(e.getName());
-                if (command != null)
+                if (command != null) {
                     CommandReceivedEvent.run(e, command);
+                }
             }
         } catch (Throwable t) {
             t.printStackTrace();

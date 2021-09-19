@@ -22,7 +22,6 @@ import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 public abstract class OwnerCommand extends AbstractBotCommand {
     protected OwnerCommand(String name, String description, String... aliases) {
         super(name, description, aliases);
-        setDefaultEnabled(false);
     }
 
     @Override

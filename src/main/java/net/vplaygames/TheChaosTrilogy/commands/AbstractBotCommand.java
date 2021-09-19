@@ -64,7 +64,7 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
     public void run(CommandReceivedEvent e) {
         long aid = e.getAuthor().getIdLong();
         Ratelimit rl = ratelimited.get(aid);
-        if (rl != null && System.currentTimeMillis() <= cooldown + rl.inflictedAt) {
+        if (rl != null && calculateCooldownLeft(rl.inflictedAt) >= 0) {
             onRatelimit(e);
             return;
         }
@@ -76,21 +76,25 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
             onInsufficientArgs(e);
             return;
         }
-        e.getChannel().sendTyping().queue(x -> {
-            try {
-                if (e.isSlashCommand) {
-                    onSlashCommandRun(e.slash, e);
-                } else {
-                    onCommandRun(e);
-                }
-                ratelimited.put(aid, new Ratelimit(aid));
-            } catch (Exception exc) {
-                e.send("There was some trouble processing your request. Please try Again Later.").queue();
-                e.reportTrouble(exc);
-            } finally {
-                e.log();
+        try {
+            if (e.isSlashCommand) {
+                onSlashCommandRun(e.slash, e);
+            } else {
+                onCommandRun(e);
             }
-        });
+            ratelimit(aid);
+        } catch (Exception exc) {
+            e.send("There was some trouble processing your request. Please contact VPG.").queue(
+                o -> {
+                },
+                x -> e.getChannel()
+                    .sendMessage("There was some trouble processing your request. Please contact VPG.")
+                    .queue()
+            );
+            e.reportTrouble(exc);
+        } finally {
+            e.log();
+        }
     }
 
     public void onButtonClick(ButtonClickEvent e, String input) {
@@ -107,11 +111,11 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
         Ratelimit rl = ratelimited.get(e.getAuthor().getIdLong());
         if (!rl.informed) {
             e.forceNotLog();
-            String waitMessage = "You have to wait for **" + Util.msToString(calculateCooldownLeft(rl.inflictedAt)) + "** before using this command again.";
-            if (e.isSlashCommand)
-                e.slash.reply(waitMessage).setEphemeral(true).queue();
-            else
-                e.getChannel().sendMessage(waitMessage).queue();
+            e.send("You have to wait for **")
+                .append(Util.msToString(calculateCooldownLeft(rl.inflictedAt)))
+                .append("** before using this command again.")
+                .setEphemeral(true)
+                .queue();
             rl.informed = true;
         }
     }
@@ -146,5 +150,9 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
 
     public void setCooldown(long cooldown, TimeUnit cooldownUnit) {
         this.cooldown = (cooldownUnit == null ? TimeUnit.MILLISECONDS : cooldownUnit).toMillis(cooldown);
+    }
+
+    public void ratelimit(long userId) {
+        ratelimited.put(userId, new Ratelimit(userId));
     }
 }

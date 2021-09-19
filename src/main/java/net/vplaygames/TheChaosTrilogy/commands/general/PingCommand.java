@@ -15,26 +15,16 @@
  */
 package net.vplaygames.TheChaosTrilogy.commands.general;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.vplaygames.TheChaosTrilogy.commands.AbstractBotCommand;
+import net.vplaygames.TheChaosTrilogy.commands.SharedImplementationCommand;
 import net.vplaygames.TheChaosTrilogy.core.CommandReceivedEvent;
 
-public class PingCommand extends AbstractBotCommand {
+public class PingCommand extends SharedImplementationCommand {
     public PingCommand() {
         super("ping", "gets the current ping (response time) of the command");
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    void execute(CommandReceivedEvent e) {
+    public void execute(CommandReceivedEvent e) {
         e.getJDA().getRestPing()
             .queue(ping -> e.send("Pong!\n**Response Time**: " + ping + " ms\n**Heartbeat**: " + e.getJDA().getGatewayPing() + " ms").queue());
     }

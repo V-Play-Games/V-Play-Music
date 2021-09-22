@@ -41,6 +41,6 @@ public class PlayerManager extends DefaultAudioPlayerManager {
     }
 
     public void loadAndPlay(CommandReceivedEvent e, String trackUrl, boolean isSearched) {
-        TrackLoadResultHandler.load(e, trackUrl, getMusicManager(e.getGuild()), isSearched);
+        getMusicManager(e.getGuild()).getLoadResultHandler().load(trackUrl, e, isSearched);
     }
 }

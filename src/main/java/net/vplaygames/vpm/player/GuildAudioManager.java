@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventListener, AudioSendHandler {
     long guildId;
+    TrackLoadResultHandler loadResultHandler = new TrackLoadResultHandler(this);
     ByteBuffer buffer = ByteBuffer.allocate(1024);
     MutableAudioFrame frame = new MutableAudioFrame();
     Set<Long> skipVotes = new HashSet<>();
@@ -38,6 +39,10 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
         super(manager);
         addListener(this);
         frame.setBuffer(buffer);
+    }
+
+    public TrackLoadResultHandler getLoadResultHandler() {
+        return loadResultHandler;
     }
 
     public boolean isLoop() {
@@ -173,6 +178,9 @@ public class GuildAudioManager extends DefaultAudioPlayer implements AudioEventL
 
     public void queue(Sender e, AudioPlaylist playlist) {
         queue.addAll(playlist.getTracks());
+        if (getPlayingTrack() == null) {
+            playNext();
+        }
         e.send("Added to queue: ")
             .append(Integer.toString(playlist.getTracks().size()))
             .append(" tracks from playlist `")

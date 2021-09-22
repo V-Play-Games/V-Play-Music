@@ -9,27 +9,24 @@ import net.vplaygames.vpm.core.CommandReceivedEvent;
 public class TrackLoadResultHandler implements AudioLoadResultHandler {
     GuildAudioManager manager;
     CommandReceivedEvent event;
-    String trackUrl;
     boolean isSearched;
 
-    public TrackLoadResultHandler(CommandReceivedEvent event, String trackUrl, GuildAudioManager manager, boolean isSearched) {
-        this.isSearched = isSearched;
-        this.event = event;
-        this.trackUrl = trackUrl;
+    public TrackLoadResultHandler(GuildAudioManager manager) {
         this.manager = manager;
     }
 
-    public static void load(CommandReceivedEvent event, String trackUrl, GuildAudioManager manager, boolean isSearched) {
-        PlayerManager.getInstance()
-            .loadItemOrdered(manager, trackUrl, new TrackLoadResultHandler(event, trackUrl, manager, isSearched));
+    public void load(String trackUrl, CommandReceivedEvent event, boolean isSearched) {
+        this.isSearched = isSearched;
+        this.event = event;
+        PlayerManager.getInstance().loadItemOrdered(manager, trackUrl, this);
     }
 
     public CommandReceivedEvent getEvent() {
         return event;
     }
 
-    public String getTrackUrl() {
-        return trackUrl;
+    public void setEvent(CommandReceivedEvent event) {
+        this.event = event;
     }
 
     @Override

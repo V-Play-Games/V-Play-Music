@@ -80,11 +80,9 @@ public class Util {
         return "`" + track.title + "` by `" + track.author + "` Link: <" + track.uri + ">";
     }
 
-    public static List<Member> getMembers(VoiceChannel vc) {
-        return vc.getMembers()
-            .stream()
-            .filter(member -> !member.getUser().isBot())
-            .collect(Collectors.toList());
+    public static String toString(long ms) {
+        ms /= 1000;
+        return (ms / 3600) + ":" + ((ms % 3600) / 60) + ":" + (ms % 60);
     }
 
     public static List<Member> getListeningMembers(VoiceChannel vc) {
@@ -92,23 +90,6 @@ public class Util {
             .stream()
             .filter(member -> !(member.getUser().isBot() || member.getVoiceState().isDeafened()))
             .collect(Collectors.toList());
-    }
-
-    public static String msToString(long ms) {
-        assert ms >= 0 : "ms cannot be in negative!";
-        if (ms < 1000) return ms + "ms";
-        String tor = ms % 1000 + "ms";
-        ms /= 1000;
-        if (ms < 60) return ms + "s " + tor;
-        tor = ms % 60 + "s " + tor;
-        ms /= 60;
-        if (ms < 60) return ms + "m " + tor;
-        tor = ms % 60 + "m " + tor;
-        ms /= 60;
-        if (ms < 24) return ms + "h " + tor;
-        tor = ms % 24 + "h " + tor;
-        ms /= 24;
-        return ms < 7 ? ms + "d " + tor : ms / 7 + "w " + ms % 7 + "d " + tor;
     }
 
     public static String space(int count) {

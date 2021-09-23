@@ -7,14 +7,14 @@ import net.vplaygames.vpm.commands.SharedImplementationCommand;
 import net.vplaygames.vpm.core.Bot;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
-import net.vplaygames.vpm.player.GuildAudioManager;
+import net.vplaygames.vpm.player.GuildMusicManager;
 import net.vplaygames.vpm.player.PlayerManager;
 
 import java.util.List;
 
 public class LeaveCommand extends SharedImplementationCommand {
     public LeaveCommand() {
-        super("leave", "Leaves the current VC", "disconnect", "dc");
+        super("leave", "Leaves the current VC", "destroy", "dc");
     }
 
     @Override
@@ -31,7 +31,7 @@ public class LeaveCommand extends SharedImplementationCommand {
         if (members.isEmpty() ||
             (members.size() == 1 && members.get(0).equals(e.getMember())) ||
             e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            PlayerManager.getInstance().getMusicManager(e.getGuild()).disconnect();
+            PlayerManager.getInstance().getMusicManager(e.getGuild()).destroy();
             e.send("Left " + vc.getAsMention()).queue();
             return;
         }
@@ -43,10 +43,10 @@ public class LeaveCommand extends SharedImplementationCommand {
             return false;
         }
         if (e.getArg(1).equals("all")) {
-            PlayerManager.getInstance().forEach(GuildAudioManager::disconnect);
+            PlayerManager.getInstance().forEach(GuildMusicManager::destroy);
             e.send("DC'ed from everywhere, just for you senpai ;)").queue();
         } else if (e.getArg(1).equals("this")) {
-            PlayerManager.getInstance().getMusicManager(e.getGuild()).disconnect();
+            PlayerManager.getInstance().getMusicManager(e.getGuild()).destroy();
             e.send("DC'ed from here, just for you senpai ;)").queue();
         } else {
             e.send("wut").queue();

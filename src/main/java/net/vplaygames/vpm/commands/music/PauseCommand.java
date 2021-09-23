@@ -3,7 +3,7 @@ package net.vplaygames.vpm.commands.music;
 import net.vplaygames.vpm.commands.SharedImplementationCommand;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
-import net.vplaygames.vpm.player.GuildAudioManager;
+import net.vplaygames.vpm.player.GuildMusicManager;
 import net.vplaygames.vpm.player.PlayerManager;
 
 public class PauseCommand extends SharedImplementationCommand {
@@ -16,7 +16,7 @@ public class PauseCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        GuildAudioManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
+        GuildMusicManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
         if (manager.getPlayingTrack() == null) {
             e.send("Pause? Pause what? Nothin' playin' in 'ere.").queue();
             return;

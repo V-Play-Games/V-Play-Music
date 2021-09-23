@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class PlayerManager extends DefaultAudioPlayerManager {
     private static PlayerManager instance;
 
-    private Map<Long, GuildAudioManager> managers;
+    private Map<Long, GuildMusicManager> managers;
 
     private PlayerManager() {
         managers = new HashMap<>();
@@ -26,21 +26,24 @@ public class PlayerManager extends DefaultAudioPlayerManager {
         return instance == null ? instance = new PlayerManager() : instance;
     }
 
-    public void forEach(Consumer<GuildAudioManager> consumer) {
+    public void forEach(Consumer<GuildMusicManager> consumer) {
         managers.values().forEach(consumer);
     }
 
-    public GuildAudioManager getMusicManager(Guild guild) {
-        return managers.computeIfAbsent(guild.getIdLong(),
-            guildId -> ((GuildAudioManager) createPlayer()).setAudioManager(guild.getAudioManager()));
+    public GuildMusicManager getMusicManager(Guild guild) {
+        return getMusicManager(guild.getIdLong());
+    }
+
+    public GuildMusicManager getMusicManager(long guildId) {
+        return managers.computeIfAbsent(guildId, id -> ((GuildMusicManager) createPlayer()).configure(id));
     }
 
     @Override
     protected AudioPlayer constructPlayer() {
-        return new GuildAudioManager(this);
+        return new GuildMusicManager();
     }
 
     public void loadAndPlay(CommandReceivedEvent e, String trackUrl, boolean isSearched) {
-        getMusicManager(e.getGuild()).getLoadResultHandler().load(trackUrl, e, isSearched);
+        getMusicManager(e.getGuild()).loadAndPlay(trackUrl, e, isSearched);
     }
 }

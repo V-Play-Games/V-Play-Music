@@ -7,20 +7,19 @@ import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
 import net.vplaygames.vpm.player.PlayerManager;
 
+import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class QueueCommand extends SharedImplementationCommand {
-    //TODO: Command Description
     public QueueCommand() {
         super("queue", "View the queue");
     }
 
     @Override
     public void execute(CommandReceivedEvent e) {
-        Queue<AudioTrack> queue = PlayerManager.getInstance().getMusicManager(e.getGuild()).getQueue();
+        LinkedList<AudioTrack> queue = PlayerManager.getInstance().getMusicManager(e.getGuild()).getQueue();
         if (e.getArgs().size() > 1) {
             switch (e.getArg(1)) {
                 case "clear":
@@ -30,13 +29,22 @@ public class QueueCommand extends SharedImplementationCommand {
                 case "move":
                     if (e.getArgs().size() != 4) {
                         e.send("Please provide a proper amount of arguments")
-                            .append("\nFormat: `"+ Bot.PREFIX+getName()+" move <from_index> <to_index>`")
+                            .append("\nFormat: `" + Bot.PREFIX + getName() + " move <from_index> <to_index>`")
                             .queue();
                         break;
                     }
-                    int from = Util.toInt(e.getArg(2)) + 1;
-                    int to = Util.toInt(e.getArg(3)) + 1;
-                    e.send("Operation not supported yet").queue();
+                    int from = Util.toInt(e.getArg(2)) - 1;
+                    int to = Util.toInt(e.getArg(3)) - 1;
+                    if (from < 0 || to < 0) {
+                        e.send("Index cannot be in negative!").queue();
+                    }
+                    if (from >= queue.size() || to >= queue.size()) {
+                        e.send("Index more than the queue size!").queue();
+                    }
+                    AudioTrack toMove = queue.get(from);
+                    AudioTrack oldTrack = queue.set(to, toMove);
+                    queue.set(from, oldTrack);
+                    e.send("Switched " + from + " and " + to).queue();
                 default:
                     e.send("Wha-").queue();
             }

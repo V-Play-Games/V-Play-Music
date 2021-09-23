@@ -31,8 +31,13 @@ public class PlayCommand extends AbstractBotCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        boolean isUri = isUri(track);
-        PlayerManager.getInstance().loadAndPlay(e, (isUri ? "" : "ytsearch:") + track, false);
+        while (track.startsWith("<") && track.endsWith(">")) {
+            track = track.substring(1, track.length() - 1);
+        }
+        if (isUri(track)) {
+            track = "ytsearch:" + track;
+        }
+        PlayerManager.getInstance().loadAndPlay(e, track, false);
     }
 
     boolean isUri(String uri) {

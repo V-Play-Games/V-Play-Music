@@ -8,7 +8,7 @@ import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
 import net.vplaygames.vpm.player.PlayerManager;
 
-import java.util.Queue;
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RemoveCommand extends AbstractBotCommand {
@@ -26,20 +26,17 @@ public class RemoveCommand extends AbstractBotCommand {
 
     @Override
     public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e, Util.toInt(e.getArg(1)));
+        execute(e, (int) slash.getOption("index").getAsLong());
     }
 
     public void execute(CommandReceivedEvent e, int index) {
-        Queue<AudioTrack> queue = PlayerManager.getInstance().getMusicManager(e.getGuild()).getQueue();
+        LinkedList<AudioTrack> queue = PlayerManager.getInstance().getMusicManager(e.getGuild()).getQueue();
         if (index < 1 || index > queue.size()) {
             e.send("Invalid index.").queue();
             return;
         }
         AtomicInteger current = new AtomicInteger(0);
-        AudioTrack track = queue.stream()
-            .filter(s -> index == current.incrementAndGet())
-            .findFirst()
-            .orElse(null);
+        AudioTrack track = queue.remove(index);
         if (track == null) {
             e.send("Something went wrong, Please try again later").queue();
             return;

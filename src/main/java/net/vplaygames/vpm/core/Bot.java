@@ -191,7 +191,7 @@ public class Bot {
                 }
             });
         errors.forEach((k, v) -> {
-            System.out.println("Failed to load " + k.getSimpleName() + "\n");
+            System.out.println("Failed to loadAndPlay " + k.getSimpleName() + "\n");
             v.printStackTrace();
         });
     }

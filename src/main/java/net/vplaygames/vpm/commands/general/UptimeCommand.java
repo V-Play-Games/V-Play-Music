@@ -29,7 +29,7 @@ public class UptimeCommand extends SharedImplementationCommand {
     @Override
     public void execute(CommandReceivedEvent e) {
         e.send(new EmbedBuilder()
-            .addField("Uptime", Util.msToString(System.currentTimeMillis() - Bot.instantAtBoot.toEpochMilli()) + " (" + (System.currentTimeMillis() - Bot.instantAtBoot.toEpochMilli()) + " ms)", false)
+            .addField("Uptime", Util.toString(System.currentTimeMillis() - Bot.instantAtBoot.toEpochMilli()) + " (" + (System.currentTimeMillis() - Bot.instantAtBoot.toEpochMilli()) + " ms)", false)
             .setFooter("Last refresh: " + Bot.lastRefresh + "\nLast boot ")
             .setTimestamp(Bot.instantAtBoot)
             .setColor(0x1abc9c).build(), Bot.instantAtBoot.toString()).queue();

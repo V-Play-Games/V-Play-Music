@@ -92,7 +92,6 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
                     .queue()
             );
             e.reportTrouble(exc);
-        } finally {
             e.log();
         }
     }
@@ -112,7 +111,7 @@ public abstract class AbstractBotCommand extends CommandData implements BotComma
         if (!rl.informed) {
             e.forceNotLog();
             e.send("You have to wait for **")
-                .append(Util.msToString(calculateCooldownLeft(rl.inflictedAt)))
+                .append(Util.toString(calculateCooldownLeft(rl.inflictedAt)))
                 .append("** before using this command again.")
                 .setEphemeral(true)
                 .queue();

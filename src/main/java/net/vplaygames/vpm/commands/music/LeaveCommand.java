@@ -14,7 +14,7 @@ import java.util.List;
 
 public class LeaveCommand extends SharedImplementationCommand {
     public LeaveCommand() {
-        super("leave", "Leaves the current VC", "destroy", "dc");
+        super("leave", "Leaves the current VC", "disconnect", "dc");
     }
 
     @Override

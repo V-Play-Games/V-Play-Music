@@ -128,6 +128,10 @@ public class GuildMusicManager extends DefaultAudioPlayer implements AudioEventL
             .getChannel();
     }
 
+    public void setBoundChannel(long id) {
+        boundChannelId = id;
+    }
+
     public TextChannel getBoundChannel() {
         return Bot.getJda().getTextChannelById(boundChannelId);
     }

@@ -7,7 +7,7 @@ import net.vplaygames.vpm.player.PlayerManager;
 
 public class ReplayCommand extends SharedImplementationCommand {
     public ReplayCommand() {
-        super("remove", "Remove the given track from the queue");
+        super("replay", "Remove the given track from the queue");
     }
 
     public void execute(CommandReceivedEvent e) {

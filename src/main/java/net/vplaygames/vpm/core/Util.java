@@ -17,14 +17,19 @@ package net.vplaygames.vpm.core;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.vplaygames.vpm.player.GuildMusicManager;
+import net.vplaygames.vpm.player.PlayerManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -41,7 +46,6 @@ public class Util {
         // Utility Class
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean canJoinVC(CommandReceivedEvent e) {
         VoiceChannel targetVC = e.getMember().getVoiceState().getChannel();
         if (targetVC == null) {
@@ -69,20 +73,38 @@ public class Util {
             return false;
         }
         e.getGuild().getAudioManager().openAudioConnection(targetVC);
+        e.send("Connected to " + targetVC.getAsMention()).queue();
+        GuildMusicManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
+        if (!e.getChannel().equals(manager.getBoundChannel())) {
+            e.send("Bound to " + ((GuildChannel) e.getChannel()).getAsMention()).queue();
+            manager.setBoundChannel(e.getChannel().getIdLong());
+        }
         return true;
+    }
+
+    public static boolean isUri(String uri) {
+        try {
+            new URI(uri);
+            return true;
+        } catch (URISyntaxException e) {
+            return false;
+        }
     }
 
     public static String toString(AudioTrack track) {
         return toString(track.getInfo());
     }
 
-    public static String toString(AudioTrackInfo track) {
-        return "`" + track.title + "` by `" + track.author + "` Link: <" + track.uri + ">";
+    public static String toString(AudioTrackInfo info) {
+        return "`" + info.title + "` by `" + info.author + "` Link: <" + info.uri + "> (" + toString(info.length) + ")";
     }
 
     public static String toString(long ms) {
         ms /= 1000;
-        return (ms / 3600) + ":" + ((ms % 3600) / 60) + ":" + (ms % 60);
+        long hr = ms / 3600;
+        long min = (ms % 3600) / 60;
+        long sec = ms % 60;
+        return (hr == 0 ? "" : (hr < 10 ? "0" : "") + hr + ":") + (min < 10 ? "0" : "") + min + ":" + (sec < 10 ? "0" : "") + sec;
     }
 
     public static List<Member> getListeningMembers(VoiceChannel vc) {
@@ -92,9 +114,9 @@ public class Util {
             .collect(Collectors.toList());
     }
 
-    public static String space(int count) {
+    public static String repeat(char c, int count) {
         StringBuilder tor = new StringBuilder();
-        while (count-- > 0) tor.append(" ");
+        while (count-- > 0) tor.append(c);
         return tor.toString();
     }
 

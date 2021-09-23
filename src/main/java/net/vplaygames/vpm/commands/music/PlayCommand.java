@@ -7,9 +7,6 @@ import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
 import net.vplaygames.vpm.player.PlayerManager;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 public class PlayCommand extends AbstractBotCommand {
     public PlayCommand() {
         super("play", "Play a track", "p");
@@ -34,18 +31,9 @@ public class PlayCommand extends AbstractBotCommand {
         while (track.startsWith("<") && track.endsWith(">")) {
             track = track.substring(1, track.length() - 1);
         }
-        if (isUri(track)) {
+        if (!Util.isUri(track)) {
             track = "ytsearch:" + track;
         }
         PlayerManager.getInstance().loadAndPlay(e, track, false);
-    }
-
-    boolean isUri(String uri) {
-        try {
-            new URI(uri);
-            return true;
-        } catch (URISyntaxException e) {
-            return false;
-        }
     }
 }

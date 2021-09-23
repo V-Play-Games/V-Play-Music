@@ -9,7 +9,6 @@ import net.vplaygames.vpm.core.Util;
 import net.vplaygames.vpm.player.PlayerManager;
 
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RemoveCommand extends AbstractBotCommand {
     public RemoveCommand() {
@@ -35,13 +34,11 @@ public class RemoveCommand extends AbstractBotCommand {
             e.send("Invalid index.").queue();
             return;
         }
-        AtomicInteger current = new AtomicInteger(0);
         AudioTrack track = queue.remove(index);
         if (track == null) {
             e.send("Something went wrong, Please try again later").queue();
             return;
         }
-        queue.remove(track);
         e.send("Removed " + Util.toString(track)).queue();
     }
 }

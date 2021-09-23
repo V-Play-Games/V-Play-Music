@@ -25,7 +25,7 @@ public class CommandReplyAction {
     private ReplyAction reply;
     private MessageAction message;
     private String content = "";
-    private Runnable beforeQueueTasks;
+    private Runnable afterQueueTasks;
 
     public CommandReplyAction(Message message) {
         this(null, message);
@@ -39,8 +39,8 @@ public class CommandReplyAction {
         this(interaction, message, null);
     }
 
-    public CommandReplyAction(Interaction interaction, Message message, Runnable beforeQueueTasks) {
-        this.beforeQueueTasks = beforeQueueTasks;
+    public CommandReplyAction(Interaction interaction, Message message, Runnable afterQueueTasks) {
+        this.afterQueueTasks = afterQueueTasks;
         if (interaction != null) {
             this.reply = interaction.deferReply();
             isReply = true;
@@ -60,6 +60,7 @@ public class CommandReplyAction {
         } else {
             message.content(content);
         }
+        this.content = content;
         return this;
     }
 
@@ -242,14 +243,6 @@ public class CommandReplyAction {
         return this;
     }
 
-    public void queue(Consumer<? super Object> success, Consumer<? super Throwable> failure) {
-        if (isReply) {
-            reply.queue(success, failure);
-        } else {
-            message.queue(success, failure);
-        }
-    }
-
     public CompletableFuture<Object> submit(boolean shouldQueue) {
         CompletableFuture<?> future = isReply ? reply.submit(shouldQueue) : message.submit(shouldQueue);
         return CompletableFuture.supplyAsync(() -> {
@@ -303,6 +296,17 @@ public class CommandReplyAction {
         queue(success, null);
     }
 
+    public void queue(Consumer<? super Object> success, Consumer<? super Throwable> failure) {
+        if (isReply) {
+            reply.queue(success, failure);
+        } else {
+            message.queue(success, failure);
+        }
+        if (afterQueueTasks != null) {
+            afterQueueTasks.run();
+        }
+    }
+
     public Object complete() {
         if (isReply) {
             return reply.complete();
@@ -336,13 +340,15 @@ public class CommandReplyAction {
     }
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super Object> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor) {
-        if (beforeQueueTasks != null) {
-            beforeQueueTasks.run();
-        }
+        ScheduledFuture<?> tor;
         if (isReply) {
-            return reply.queueAfter(delay, unit, success, failure, executor);
+            tor = reply.queueAfter(delay, unit, success, failure, executor);
         } else {
-            return message.queueAfter(delay, unit, success, failure, executor);
+            tor = message.queueAfter(delay, unit, success, failure, executor);
         }
+        if (afterQueueTasks != null) {
+            afterQueueTasks.run();
+        }
+        return tor;
     }
 }

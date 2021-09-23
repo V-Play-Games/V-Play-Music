@@ -10,7 +10,7 @@ import net.vplaygames.vpm.player.PlayerManager;
 
 public class SeekCommand extends AbstractBotCommand {
     public SeekCommand() {
-        super("remove", "Remove the given track from the queue");
+        super("seek", "Remove the given track from the queue");
         addOption(OptionType.INTEGER, "position", "Index of the track to be removed", true);
         setMinArgs(1);
         setMaxArgs(1);
@@ -32,6 +32,7 @@ public class SeekCommand extends AbstractBotCommand {
             e.send("Nothin' Playin' in 'ere").queue();
             return;
         }
+        position *= 1000;
         if (position < 0 || position > track.getDuration()) {
             e.send("Position out of bounds! Must be between 0 and the length of the track (" + Util.toString(track.getDuration()) + ")").queue();
             return;

@@ -192,6 +192,8 @@ public class CommandReceivedEvent implements Sender {
     }
 
     public void log() {
+        output = "";
+        action.setContent("");
         DataObject logRepresentation = DataObject.empty();
         logRepresentation.put("id", processId);
         logRepresentation.put("time", timeCreated.toEpochSecond());

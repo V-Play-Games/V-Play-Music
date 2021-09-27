@@ -16,7 +16,7 @@ public class LoopCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        MusicPlayer player = PlayerManager.getPlayer(e.getGuild());
         player.toggleLoop();
         e.send("Set loop to " + player.isLoop()).queue();
     }

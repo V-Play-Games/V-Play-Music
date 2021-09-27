@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.vplaygames.vpm.commands.AbstractBotCommand;
 import net.vplaygames.vpm.commands.OwnerCommand;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
@@ -26,23 +28,24 @@ import net.vplaygames.vpm.core.Util;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class RetrieveCommand extends OwnerCommand {
+public class RetrieveCommand extends AbstractBotCommand implements OwnerCommand {
     public RetrieveCommand() {
         super("retrieve", "Request data from the bot");
+        addOption(OptionType.STRING, "key","Key of the information required", true);
     }
 
     @Override
     public void onCommandRun(CommandReceivedEvent e) {
-        execute(e);
+        execute(e, e.getArg(1));
     }
 
     @Override
     public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e);
+        execute(e, Util.getString(slash, "key"));
     }
 
-    public void execute(CommandReceivedEvent e) {
-        switch (e.getArg(1)) {
+    public void execute(CommandReceivedEvent e, String arg) {
+        switch (arg) {
 //            case "logs":
 //                e.send("`java.lang.System.out`").addFile(new FileInputStream((FileDescriptor.out)), "log-file.txt").queue();
 //                break;

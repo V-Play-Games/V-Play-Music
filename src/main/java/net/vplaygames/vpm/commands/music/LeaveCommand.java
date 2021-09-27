@@ -31,7 +31,7 @@ public class LeaveCommand extends SharedImplementationCommand {
         if (members.isEmpty() ||
             (members.size() == 1 && members.get(0).equals(e.getMember())) ||
             e.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            PlayerManager.getInstance().getPlayer(e.getGuild()).destroy();
+            PlayerManager.getPlayer(e.getGuild()).destroy();
             e.send("Left " + vc.getAsMention()).queue();
             return;
         }
@@ -46,7 +46,7 @@ public class LeaveCommand extends SharedImplementationCommand {
             PlayerManager.getInstance().forEach(MusicPlayer::destroy);
             e.send("DC'ed from everywhere, just for you senpai ;)").queue();
         } else if (e.getArg(1).equals("this")) {
-            PlayerManager.getInstance().getPlayer(e.getGuild()).destroy();
+            PlayerManager.getPlayer(e.getGuild()).destroy();
             e.send("DC'ed from here, just for you senpai ;)").queue();
         } else {
             e.send("wut").queue();

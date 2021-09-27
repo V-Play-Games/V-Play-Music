@@ -4,12 +4,13 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import net.dv8tion.jda.api.entities.Guild;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Consumer;
 
-public class PlayerManager extends DefaultAudioPlayerManager {
+public class PlayerManager extends DefaultAudioPlayerManager implements Iterable<MusicPlayer> {
     private static PlayerManager instance;
 
     private Map<Long, MusicPlayer> players;
@@ -25,12 +26,8 @@ public class PlayerManager extends DefaultAudioPlayerManager {
         return instance == null ? instance = new PlayerManager() : instance;
     }
 
-    public void forEach(Consumer<MusicPlayer> consumer) {
-        players.values().forEach(consumer);
-    }
-
-    public MusicPlayer getPlayer(Guild guild) {
-        return getPlayer(guild.getIdLong());
+    public static MusicPlayer getPlayer(Guild guild) {
+        return getInstance().getPlayer(guild.getIdLong());
     }
 
     public MusicPlayer getPlayer(long guildId) {
@@ -44,5 +41,11 @@ public class PlayerManager extends DefaultAudioPlayerManager {
 
     public void loadAndPlay(CommandReceivedEvent e, String trackUrl, boolean isSearched) {
         getPlayer(e.getGuild()).loadAndPlay(trackUrl, e, isSearched);
+    }
+
+    @NotNull
+    @Override
+    public Iterator<MusicPlayer> iterator() {
+        return players.values().iterator();
     }
 }

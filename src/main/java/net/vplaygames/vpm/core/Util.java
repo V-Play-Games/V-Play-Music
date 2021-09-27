@@ -173,7 +173,7 @@ public class Util {
         }
         e.getGuild().getAudioManager().openAudioConnection(targetVC);
         e.send("Connected to " + targetVC.getAsMention()).queue();
-        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        MusicPlayer player = PlayerManager.getPlayer(e.getGuild());
         if (!e.getChannel().equals(player.getBoundChannel())) {
             e.send("Bound to " + ((GuildChannel) e.getChannel()).getAsMention()).queue();
             player.setBoundChannel(e.getChannel().getIdLong());

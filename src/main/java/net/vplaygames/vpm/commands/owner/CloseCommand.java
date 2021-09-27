@@ -15,27 +15,17 @@
  */
 package net.vplaygames.vpm.commands.owner;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.vplaygames.vpm.commands.OwnerCommand;
+import net.vplaygames.vpm.commands.SharedImplementationCommand;
 import net.vplaygames.vpm.core.Bot;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 
-public class CloseCommand extends OwnerCommand {
+public class CloseCommand extends SharedImplementationCommand implements OwnerCommand {
     public CloseCommand() {
         super("close", "Closes the bot");
     }
 
-    @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    void execute(CommandReceivedEvent e) {
+    public void execute(CommandReceivedEvent e) {
         Bot.closed = true;
         e.send("Successfully Closed Event Manger!").queue();
     }

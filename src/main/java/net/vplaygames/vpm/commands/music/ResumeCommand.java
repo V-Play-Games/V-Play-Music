@@ -16,7 +16,7 @@ public class ResumeCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        MusicPlayer player = PlayerManager.getPlayer(e.getGuild());
         if (player.getPlayingTrack() == null) {
             e.send("Resume? Resume what? Nothin' playin' in 'ere.").queue();
             return;

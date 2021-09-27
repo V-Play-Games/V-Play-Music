@@ -19,11 +19,13 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import net.dv8tion.jda.api.utils.cache.CacheView;
-import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.vplaygames.vpm.commands.AbstractBotCommand;
 import net.vplaygames.vpm.commands.BotCommand;
@@ -60,7 +62,7 @@ public class Bot {
     public static final Map<String, EntityInitInfo<?>> initInfoMap = new HashMap<>();
     public static final Map<Long, GuessGame> guessGamePlayers = new HashMap<>();
     public static final Map<String, AbstractBotCommand> commands = new HashMap<>();
-    public static final Map<Integer, Long> shardLoggers = new HashMap<>();
+    public static final Map<Integer, Long> loggers = new HashMap<>();
     public static ShardManager shardManager;
     public static ScanResult scanResult;
     public static boolean closed = false;
@@ -70,19 +72,21 @@ public class Bot {
     public static void start() throws LoginException {
         shardManager = DefaultShardManagerBuilder.createDefault(Bot.TOKEN)
             .enableIntents(DIRECT_MESSAGES, GUILD_MEMBERS, GUILD_MESSAGES, GUILD_VOICE_STATES, GUILD_EMOJIS)
+            .setMemberCachePolicy(MemberCachePolicy.ALL)
             .addEventListeners(EventHandler.getInstance())
             .setShardsTotal(MAX_SHARDS)
+            .setActivity(Activity.watching("My Loading"))
             .build();
     }
 
     public static void init() {
         syncCount = 0;
+        bootTime = Instant.now();
         startSync();
         loadData();
         loadLoggers();
         loadCommands();
         setDefaultActivity();
-        setBooted();
         getLogChannel(0).sendMessage("Bot is up!").queue();
     }
 
@@ -91,11 +95,11 @@ public class Bot {
     }
 
     public static TextChannel getLogChannel(int shardId) {
-        return shardManager.getTextChannelById(shardLoggers.get(shardId));
+        return shardManager.getTextChannelById(loggers.get(shardId));
     }
 
     public static TextChannel getSyncChannel() {
-        return shardManager.getTextChannelById(shardLoggers.get(-1));
+        return shardManager.getTextChannelById(loggers.get(-1));
     }
 
     public static ShardManager getShardManager() {
@@ -128,7 +132,7 @@ public class Bot {
                 }
             })));
         initInfoMap.values().forEach(Bot::loadEntity);
-        getShardManager().getGuilds().forEach(guild -> PlayerManager.getInstance().getPlayer(guild));
+        shardManager.getGuilds().forEach(PlayerManager::getPlayer);
     }
 
     public static <T extends Entity> void loadEntity(EntityInitInfo<T> info) {
@@ -177,7 +181,7 @@ public class Bot {
     }
 
     public static void addLogger(int index, long id) {
-        shardLoggers.put(index, id);
+        loggers.put(index, id);
         if (0 <= index && index < MAX_SHARDS) {
             getLogChannel(index)
                 .sendMessage("GuildCache:\n")
@@ -201,9 +205,9 @@ public class Bot {
             System.out.println("Loaded " + handler.getName() + " button handler");
         });
         Set<AbstractBotCommand> commandSet = new HashSet<>(commands.values());
-        shardManager.getShards().forEach(shard -> shard.updateCommands()
+        getPrimaryShard().updateCommands()
             .addCommands(commandSet)
-            .queue(c -> c.forEach(command -> commands.get(command.getName()).finalizeCommand(command))));
+            .queue(c -> c.forEach(command -> commands.get(command.getName()).finalizeCommand(command)));
     }
 
     @SuppressWarnings("unchecked")
@@ -232,16 +236,11 @@ public class Bot {
     }
 
     public static void setDefaultActivity() {
-        SnowflakeCacheView<Guild> cache = shardManager.getGuildCache();
-        shardManager.setActivity(Activity.playing("with " + cache.stream()
-            .map(Guild::getMemberCache)
-            .flatMap(CacheView::stream)
-            .mapToLong(Member::getIdLong)
-            .distinct()
-            .count() + " people in " + cache.size() + " servers"));
-    }
-
-    public static void setBooted() {
-        bootTime = Instant.now();
+        String activity = "with " + shardManager.getGuildCache()
+            .stream()
+            .mapToInt(Guild::getMemberCount)
+            .sum() + " people in " + shardManager.getGuildCache().size() + " servers";
+        shardManager.setActivity(Activity.playing(activity));
+        System.out.println(activity);
     }
 }

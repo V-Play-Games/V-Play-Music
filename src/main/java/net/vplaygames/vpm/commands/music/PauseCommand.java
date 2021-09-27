@@ -16,7 +16,7 @@ public class PauseCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        MusicPlayer player = PlayerManager.getPlayer(e.getGuild());
         if (player.getPlayingTrack() == null) {
             e.send("Pause? Pause what? Nothin' playin' in 'ere.").queue();
             return;

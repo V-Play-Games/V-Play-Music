@@ -15,7 +15,7 @@ public class ClearCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        PlayerManager.getInstance().getPlayer(e.getGuild()).getQueue().clear();
+        PlayerManager.getPlayer(e.getGuild()).getQueue().clear();
         e.send("Boom! Queue empty.").queue();
     }
 }

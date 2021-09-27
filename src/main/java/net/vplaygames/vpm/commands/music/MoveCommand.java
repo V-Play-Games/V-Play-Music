@@ -34,7 +34,7 @@ public class MoveCommand extends AbstractBotCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        LinkedList<AudioTrack> queue = PlayerManager.getInstance().getPlayer(e.getGuild()).getQueue();
+        LinkedList<AudioTrack> queue = PlayerManager.getPlayer(e.getGuild()).getQueue();
         if (e.getArgs().size() != 4) {
             e.send("Please provide a proper amount of arguments")
                 .append("\nFormat: `" + Bot.PREFIX + getName() + " move <from_index> <to_index>`")

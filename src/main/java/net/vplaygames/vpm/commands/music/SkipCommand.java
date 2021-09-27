@@ -19,7 +19,7 @@ public class SkipCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        MusicPlayer player = PlayerManager.getPlayer(e.getGuild());
         if (player.getPlayingTrack() == null) {
             e.send("There's nothin' playin' in 'ere. Party's over. Let's have an after-party whaddaya think?").queue();
             return;

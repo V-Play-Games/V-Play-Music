@@ -15,26 +15,16 @@
  */
 package net.vplaygames.vpm.commands.owner;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.vplaygames.vpm.commands.OwnerCommand;
+import net.vplaygames.vpm.commands.SharedImplementationCommand;
 import net.vplaygames.vpm.core.Bot;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.player.MusicPlayer;
 import net.vplaygames.vpm.player.PlayerManager;
 
-public class ShutdownCommand extends OwnerCommand {
+public class ShutdownCommand extends SharedImplementationCommand implements OwnerCommand {
     public ShutdownCommand() {
-        super("shutdown", "Restarts the bot");
-    }
-
-    @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        execute(e);
-    }
-
-    @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e);
+        super("shutdown", "Shuts down the bot");
     }
 
     public void execute(CommandReceivedEvent e) {

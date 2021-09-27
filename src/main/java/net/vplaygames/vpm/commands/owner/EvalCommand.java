@@ -17,6 +17,7 @@ package net.vplaygames.vpm.commands.owner;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.vplaygames.vpm.commands.AbstractBotCommand;
 import net.vplaygames.vpm.commands.OwnerCommand;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 
@@ -24,7 +25,7 @@ import javax.script.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class EvalCommand extends OwnerCommand {
+public class EvalCommand extends AbstractBotCommand implements OwnerCommand {
     public static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("js");
 
     public EvalCommand() {

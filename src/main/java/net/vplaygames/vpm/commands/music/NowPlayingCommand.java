@@ -15,7 +15,7 @@ public class NowPlayingCommand extends SharedImplementationCommand {
 
     @Override
     public void execute(CommandReceivedEvent e) {
-        AudioTrack track = PlayerManager.getInstance().getPlayer(e.getGuild()).getPlayingTrack();
+        AudioTrack track = PlayerManager.getPlayer(e.getGuild()).getPlayingTrack();
         if (track == null) {
             e.send("There's nothing playin' in 'ere. Party's over. Let's have an after party whaddaya think?").queue();
             return;

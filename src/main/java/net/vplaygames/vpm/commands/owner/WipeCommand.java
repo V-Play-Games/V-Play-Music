@@ -17,12 +17,13 @@ package net.vplaygames.vpm.commands.owner;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.vplaygames.vpm.commands.AbstractBotCommand;
 import net.vplaygames.vpm.commands.OwnerCommand;
 import net.vplaygames.vpm.core.Bot;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
 
-public class WipeCommand extends OwnerCommand {
+public class WipeCommand extends AbstractBotCommand implements OwnerCommand {
     public WipeCommand() {
         super("wipe", "Wipes data from the bot");
         addOption(OptionType.STRING, "name", "the data to wipe from the bot");
@@ -31,13 +32,13 @@ public class WipeCommand extends OwnerCommand {
     }
 
     @Override
-    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
-        execute(e, Util.getString(slash, "name", "all"));
+    public void onCommandRun(CommandReceivedEvent e) {
+        execute(e, e.getArg(1));
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        execute(e, e.getArg(1));
+    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
+        execute(e, Util.getString(slash, "name", "all"));
     }
 
     private void execute(CommandReceivedEvent e, String toWipe) {

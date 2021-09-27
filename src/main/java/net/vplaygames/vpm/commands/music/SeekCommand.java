@@ -27,7 +27,7 @@ public class SeekCommand extends AbstractBotCommand {
     }
 
     public void execute(CommandReceivedEvent e, long position) {
-        AudioTrack track = PlayerManager.getInstance().getPlayer(e.getGuild()).getPlayingTrack();
+        AudioTrack track = PlayerManager.getPlayer(e.getGuild()).getPlayingTrack();
         if (track == null) {
             e.send("Nothin' Playin' in 'ere").queue();
             return;

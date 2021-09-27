@@ -3,7 +3,7 @@ package net.vplaygames.vpm.commands.music;
 import net.vplaygames.vpm.commands.SharedImplementationCommand;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
-import net.vplaygames.vpm.player.GuildMusicManager;
+import net.vplaygames.vpm.player.MusicPlayer;
 import net.vplaygames.vpm.player.PlayerManager;
 
 public class ResumeCommand extends SharedImplementationCommand {
@@ -16,16 +16,16 @@ public class ResumeCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        GuildMusicManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
-        if (manager.getPlayingTrack() == null) {
+        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        if (player.getPlayingTrack() == null) {
             e.send("Resume? Resume what? Nothin' playin' in 'ere.").queue();
             return;
         }
-        if (!manager.isPaused()) {
+        if (!player.isPaused()) {
             e.send("Resume? Resume what? Isn't it playing already?").queue();
             return;
         }
-        manager.setPaused(false);
+        player.setPaused(false);
         e.send("Resumed the track.").queue();
     }
 }

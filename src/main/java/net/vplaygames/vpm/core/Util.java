@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.vplaygames.vpm.player.GuildMusicManager;
+import net.vplaygames.vpm.player.MusicPlayer;
 import net.vplaygames.vpm.player.PlayerManager;
 
 import java.io.File;
@@ -42,8 +42,107 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Util {
+    public static String[][] progressBarEmotes = {
+        {
+            "",
+            "",
+            "",
+            ""
+        },
+        {
+            "",
+            "",
+            "",
+            "",
+            ""
+        },
+        {
+            "",
+            "",
+            "",
+            ""
+        }
+    };
+
     private Util() {
         // Utility Class
+    }
+
+    public static String getProgressBar(long progress, long total, int bars) {
+        int percent = (int) Math.ceil(progress * (bars * 3 + 5.0) / total);
+        StringBuilder tor = new StringBuilder();
+        for (int i = 0; i < progressBarEmotes.length; i++) {
+            String[] bar = progressBarEmotes[i];
+            if (progress > bar.length - 1) {
+
+            }
+            if (i == 1 && bars > 1) {
+                i--;
+                bars--;
+            }
+        }
+        switch (percent) {
+            case 0:
+                // Shouldn't happen
+                throw new InternalError();
+            case 1:
+                percent -= 1;
+                tor.append(progressBarEmotes[0][0]);
+                break;
+            case 2:
+                percent -= 2;
+                tor.append(progressBarEmotes[0][1]);
+                break;
+            default:
+                percent -= 2;
+                tor.append(progressBarEmotes[0][2]);
+                break;
+        }
+        for (int i = 1; i <= bars; i++) {
+            switch (percent) {
+                case 0:
+                    tor.append(progressBarEmotes[0][0]);
+                    break;
+                case 1:
+                    percent -= 1;
+                    tor.append(progressBarEmotes[0][1]);
+                    break;
+                case 2:
+                    percent -= 2;
+                    tor.append(progressBarEmotes[0][2]);
+                    break;
+                case 3:
+                    percent -= 3;
+                    tor.append(progressBarEmotes[0][3]);
+                    break;
+                default:
+                    percent -= 3;
+                    tor.append(progressBarEmotes[0][4]);
+                    break;
+            }
+        }
+        switch (percent) {
+            case 0:
+                tor.append(progressBarEmotes[0][0]);
+                break;
+            case 1:
+                percent -= 1;
+                tor.append(progressBarEmotes[0][1]);
+                break;
+            case 2:
+                percent -= 2;
+                tor.append(progressBarEmotes[0][2]);
+                break;
+            case 3:
+                percent -= 3;
+                tor.append(progressBarEmotes[0][3]);
+                break;
+            default:
+                // Shouldn't happen
+                throw new InternalError();
+        }
+        assert percent == 0;
+        return tor.toString();
     }
 
     public static boolean canJoinVC(CommandReceivedEvent e) {
@@ -74,10 +173,10 @@ public class Util {
         }
         e.getGuild().getAudioManager().openAudioConnection(targetVC);
         e.send("Connected to " + targetVC.getAsMention()).queue();
-        GuildMusicManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
-        if (!e.getChannel().equals(manager.getBoundChannel())) {
+        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        if (!e.getChannel().equals(player.getBoundChannel())) {
             e.send("Bound to " + ((GuildChannel) e.getChannel()).getAsMention()).queue();
-            manager.setBoundChannel(e.getChannel().getIdLong());
+            player.setBoundChannel(e.getChannel().getIdLong());
         }
         return true;
     }

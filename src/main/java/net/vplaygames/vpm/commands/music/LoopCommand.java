@@ -3,7 +3,7 @@ package net.vplaygames.vpm.commands.music;
 import net.vplaygames.vpm.commands.SharedImplementationCommand;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
-import net.vplaygames.vpm.player.GuildMusicManager;
+import net.vplaygames.vpm.player.MusicPlayer;
 import net.vplaygames.vpm.player.PlayerManager;
 
 public class LoopCommand extends SharedImplementationCommand {
@@ -16,8 +16,8 @@ public class LoopCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        GuildMusicManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
-        manager.toggleLoop();
-        e.send("Set loop to " + manager.isLoop()).queue();
+        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        player.toggleLoop();
+        e.send("Set loop to " + player.isLoop()).queue();
     }
 }

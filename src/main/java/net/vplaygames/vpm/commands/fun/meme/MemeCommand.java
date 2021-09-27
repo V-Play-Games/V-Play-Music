@@ -39,7 +39,7 @@ public class MemeCommand extends AbstractBotCommand {
         addOption(OptionType.STRING, "subreddit", "The subreddit to pull a meme from");
         setCooldown(10, TimeUnit.SECONDS);
         setMaxArgs(1);
-        Bot.timer.execute(() -> {
+        Bot.getPrimaryShard().getRateLimitPool().execute(() -> {
             try {
                 randomMemes.addAll(conn.getMemes(10));
                 randomMemes.addAll(conn.getMemes(10, "PokemonMasters"));

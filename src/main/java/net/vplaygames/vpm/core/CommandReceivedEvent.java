@@ -192,8 +192,6 @@ public class CommandReceivedEvent implements Sender {
     }
 
     public void log() {
-        output = "";
-        action.setContent("");
         DataObject logRepresentation = DataObject.empty();
         logRepresentation.put("id", processId);
         logRepresentation.put("time", timeCreated.toEpochSecond());
@@ -210,8 +208,8 @@ public class CommandReceivedEvent implements Sender {
             logRepresentation.put("guild", getGuild().getIdLong());
             logRepresentation.put("guildName", getGuild().getName());
         }
-        if (!forceNotLog && Bot.getLogChannel() != null) {
-            Bot.getLogChannel().sendMessageEmbeds(new EmbedBuilder()
+        if (!forceNotLog) {
+            Bot.getLogChannel(getJDA()).sendMessageEmbeds(new EmbedBuilder()
                 .setTitle("Process id " + processId)
                 .setDescription("Error: " + (trouble == null
                     ? "None"
@@ -224,5 +222,7 @@ public class CommandReceivedEvent implements Sender {
                 .addFile(Util.makeFileOf(logRepresentation, "log-file-" + processId + ".json"))
                 .queue();
         }
+        output = "";
+        action.setContent("");
     }
 }

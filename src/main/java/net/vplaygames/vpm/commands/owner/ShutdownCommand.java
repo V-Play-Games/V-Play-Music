@@ -13,26 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.vplaygames.vpm.commands.general;
+package net.vplaygames.vpm.commands.owner;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.utils.TimeFormat;
-import net.vplaygames.vpm.commands.SharedImplementationCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.vplaygames.vpm.commands.OwnerCommand;
 import net.vplaygames.vpm.core.Bot;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
+import net.vplaygames.vpm.player.MusicPlayer;
+import net.vplaygames.vpm.player.PlayerManager;
 
-public class UptimeCommand extends SharedImplementationCommand {
-    public UptimeCommand() {
-        super("uptime", "Gives the uptime of the bot i.e. the amount of time the bot has been online since last startup");
+public class ShutdownCommand extends OwnerCommand {
+    public ShutdownCommand() {
+        super("shutdown", "Restarts the bot");
     }
 
     @Override
+    public void onCommandRun(CommandReceivedEvent e) {
+        execute(e);
+    }
+
+    @Override
+    public void onSlashCommandRun(SlashCommandEvent slash, CommandReceivedEvent e) {
+        execute(e);
+    }
+
     public void execute(CommandReceivedEvent e) {
-        e.send(new EmbedBuilder()
-            .appendDescription("Last downtime was ")
-            .appendDescription(TimeFormat.RELATIVE.atInstant(Bot.bootTime).toString())
-            .setFooter("Last boot ")
-            .setTimestamp(Bot.bootTime)
-            .setColor(0x1abc9c).build(), Bot.bootTime.toString()).queue();
+        e.send("Shutting Down!").queue();
+        PlayerManager.getInstance().forEach(MusicPlayer::destroy);
+        Bot.getShardManager().shutdown();
     }
 }

@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 public class GuessCommand extends SharedImplementationCommand {
     public GuessCommand() {
         super("guess", "Guess a Pokemon name by the given description of it");
-        Bot.jda.addEventListener(new ListenerAdapter() {
+        Bot.shardManager.addEventListener(new ListenerAdapter() {
             @Override
             public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent e) {
                 GuessCommand.this.onGuildMessageReceived(e);

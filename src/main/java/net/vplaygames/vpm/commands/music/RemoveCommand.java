@@ -29,7 +29,7 @@ public class RemoveCommand extends AbstractBotCommand {
     }
 
     public void execute(CommandReceivedEvent e, int index) {
-        LinkedList<AudioTrack> queue = PlayerManager.getInstance().getMusicManager(e.getGuild()).getQueue();
+        LinkedList<AudioTrack> queue = PlayerManager.getInstance().getPlayer(e.getGuild()).getQueue();
         if (index < 1 || index > queue.size()) {
             e.send("Invalid index.").queue();
             return;

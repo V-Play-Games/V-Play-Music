@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GuildMusicManager extends DefaultAudioPlayer implements AudioEventListenerAdapter, AudioSendHandler, AudioLoadResultHandler {
+public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListenerAdapter, AudioSendHandler, AudioLoadResultHandler {
     long guildId;
     CommandReceivedEvent event;
     boolean isSearched;
@@ -37,7 +37,7 @@ public class GuildMusicManager extends DefaultAudioPlayer implements AudioEventL
     int listeningMemberCount;
     long boundChannelId;
 
-    public GuildMusicManager() {
+    public MusicPlayer() {
         super(PlayerManager.getInstance());
         addListener(this);
         frame.setBuffer(buffer);
@@ -67,16 +67,16 @@ public class GuildMusicManager extends DefaultAudioPlayer implements AudioEventL
         setLoopQueue(!loopQueue.get());
     }
 
-    public GuildMusicManager configure(long guildId) {
+    public MusicPlayer configure(long guildId) {
         this.guildId = guildId;
-        Bot.getJda().getGuildById(guildId).getAudioManager().setSendingHandler(this);
+        Bot.getShardManager().getGuildById(guildId).getAudioManager().setSendingHandler(this);
         return this;
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        Bot.getJda().getGuildById(guildId).getAudioManager().closeAudioConnection();
+        Bot.getShardManager().getGuildById(guildId).getAudioManager().closeAudioConnection();
         setPaused(false);
         setLoop(false);
         setLoopQueue(false);
@@ -121,19 +121,19 @@ public class GuildMusicManager extends DefaultAudioPlayer implements AudioEventL
     }
 
     public VoiceChannel getConnectedVC() {
-        return Bot.getJda()
+        return Bot.getShardManager()
             .getGuildById(guildId)
-            .getMember(Bot.getJda().getSelfUser())
+            .getMember(Bot.getPrimaryShard().getSelfUser())
             .getVoiceState()
             .getChannel();
     }
 
-    public void setBoundChannel(long id) {
-        boundChannelId = id;
+    public TextChannel getBoundChannel() {
+        return Bot.getShardManager().getTextChannelById(boundChannelId);
     }
 
-    public TextChannel getBoundChannel() {
-        return Bot.getJda().getTextChannelById(boundChannelId);
+    public void setBoundChannel(long id) {
+        boundChannelId = id;
     }
 
     public void playNext() {

@@ -18,7 +18,7 @@ public class QueueCommand extends SharedImplementationCommand {
 
     @Override
     public void execute(CommandReceivedEvent e) {
-        LinkedList<AudioTrack> queue = PlayerManager.getInstance().getMusicManager(e.getGuild()).getQueue();
+        LinkedList<AudioTrack> queue = PlayerManager.getInstance().getPlayer(e.getGuild()).getQueue();
         AtomicInteger i = new AtomicInteger(1);
         e.send(Optional.of(queue.stream()
             .limit(10)

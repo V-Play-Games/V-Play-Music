@@ -11,7 +11,7 @@ public class ReplayCommand extends SharedImplementationCommand {
     }
 
     public void execute(CommandReceivedEvent e) {
-        AudioTrack track = PlayerManager.getInstance().getMusicManager(e.getGuild()).getPlayingTrack();
+        AudioTrack track = PlayerManager.getInstance().getPlayer(e.getGuild()).getPlayingTrack();
         if (track == null) {
             e.send("Nothin' Playin' in 'ere").queue();
             return;

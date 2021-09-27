@@ -30,11 +30,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class EventHandler extends ListenerAdapter {
     private static EventHandler instance;
     private static Pattern selfMention;
+    private AtomicInteger shardsInit = new AtomicInteger();
 
     protected EventHandler() {
     }
@@ -44,10 +46,10 @@ public class EventHandler extends ListenerAdapter {
     }
 
     public static Pattern getSelfMentionPattern() {
-        return selfMention == null ? selfMention = Pattern.compile("<@!?" + Bot.getJda().getSelfUser().getIdLong() + ">") : selfMention;
+        return selfMention == null ? selfMention = Pattern.compile("<@!?" + Bot.getPrimaryShard().getSelfUser().getIdLong() + ">") : selfMention;
     }
 
-    public static void botPingedEvent(MessageReceivedEvent e) {
+    public static void onBotMentioned(MessageReceivedEvent e) {
         e.getChannel()
             .sendMessage("Prefix: " + Bot.PREFIX)
             .setEmbeds(new EmbedBuilder()
@@ -81,7 +83,7 @@ public class EventHandler extends ListenerAdapter {
                     Optional.ofNullable(Bot.commands.get(args[0].substring(Bot.PREFIX.length()).toLowerCase()))
                         .ifPresent(command -> CommandReceivedEvent.run(e, args, command));
                 } else if (getSelfMentionPattern().matcher(content).find()) {
-                    botPingedEvent(e);
+                    onBotMentioned(e);
                 }
             }
         } catch (Throwable t) {
@@ -117,7 +119,11 @@ public class EventHandler extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent e) {
         try {
-            Bot.init();
+            // init on last shard only
+            if (shardsInit.get() == e.getJDA().getShardInfo().getShardTotal() - 1)
+                Bot.init();
+            else
+                shardsInit.incrementAndGet();
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

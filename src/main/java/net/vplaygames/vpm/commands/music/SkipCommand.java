@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.vplaygames.vpm.commands.SharedImplementationCommand;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
 import net.vplaygames.vpm.core.Util;
-import net.vplaygames.vpm.player.GuildMusicManager;
+import net.vplaygames.vpm.player.MusicPlayer;
 import net.vplaygames.vpm.player.PlayerManager;
 
 import java.util.List;
@@ -19,17 +19,17 @@ public class SkipCommand extends SharedImplementationCommand {
         if (!Util.canJoinVC(e)) {
             return;
         }
-        GuildMusicManager manager = PlayerManager.getInstance().getMusicManager(e.getGuild());
-        if (manager.getPlayingTrack() == null) {
+        MusicPlayer player = PlayerManager.getInstance().getPlayer(e.getGuild());
+        if (player.getPlayingTrack() == null) {
             e.send("There's nothin' playin' in 'ere. Party's over. Let's have an after-party whaddaya think?").queue();
             return;
         }
-        List<Member> listeningMembers = Util.getListeningMembers(manager.getConnectedVC());
+        List<Member> listeningMembers = Util.getListeningMembers(player.getConnectedVC());
         if (listeningMembers.size() == 1 && listeningMembers.get(0).equals(e.getMember())) {
-            manager.playNext();
+            player.playNext();
             e.send("Successfully skipped!").queue();
             return;
         }
-        manager.skip(e, listeningMembers);
+        player.skip(e, listeningMembers);
     }
 }

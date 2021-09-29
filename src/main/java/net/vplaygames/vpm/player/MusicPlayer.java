@@ -217,7 +217,7 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
     public void loadFailed(FriendlyException exception) {
         getBoundChannel().sendMessage(exception.severity == FriendlyException.Severity.COMMON
             ? exception.getMessage()
-            : "Something broke while playing the track!").queue();
+            : "Something broke while trying to play the track!").queue();
     }
 
     // Methods for processing events
@@ -245,7 +245,7 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
                 playNext();
             }
         } else if (e.endReason != AudioTrackEndReason.CLEANUP && loopQueue.get()) {
-            queue.offer(getPlayingTrack().makeClone());
+            queue.offer(e.track.makeClone());
         }
     }
 

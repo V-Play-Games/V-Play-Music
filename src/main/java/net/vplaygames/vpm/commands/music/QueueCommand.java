@@ -6,7 +6,7 @@ import net.vplaygames.vpm.core.Util;
 
 public class QueueCommand extends SharedImplementationCommand {
     public QueueCommand() {
-        super("queue", "View the queue");
+        super("queue", "View the queue", "q");
     }
 
     @Override

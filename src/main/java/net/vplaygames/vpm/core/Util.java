@@ -285,18 +285,18 @@ public class Util {
                 .appendDescription("/")
                 .appendDescription(Util.toString(track.getDuration()))
                 .appendDescription("\n\n**__Up Next__:**\n");
-            if (queue.size() != 0) {
-                eb.appendDescription(listTracks(queue, page, 10))
-                    .appendDescription("\n\nQueue size: ")
-                    .appendDescription(toString(queue.stream().mapToLong(AudioTrack::getDuration).sum()));
+            if (queue.isEmpty()) {
+                eb.appendDescription("Emptiness, my old friend~");
             } else {
-                eb.appendDescription("*cricket cricket*");
+                eb.appendDescription(listTracks(queue, page, 10))
+                    .appendDescription("\n\nQueue Length: ")
+                    .appendDescription(toString(queue.stream().mapToLong(AudioTrack::getDuration).sum()));
             }
         } else {
             eb.appendDescription("Nothin' playin' in 'ere. Party's o'er. Let's 'ave an after-party whaddaya think?");
         }
-        eb.setFooter("Page " + (page + 1) + "/" + ((int) Math.ceil(queue.size() / 10.0))
-            + " | Loop: " + (player.isLoop() ? TICK_MARK : CROSS_MARK)
+        eb.setFooter((queue.isEmpty() ? "" : "Page " + (page + 1) + "/" + ((int) Math.ceil(queue.size() / 10.0)) + " | ")
+            + "Loop: " + (player.isLoop() ? TICK_MARK : CROSS_MARK)
             + " | Queue Loop: " + (player.isLoopQueue() ? TICK_MARK : CROSS_MARK));
         return eb;
     }

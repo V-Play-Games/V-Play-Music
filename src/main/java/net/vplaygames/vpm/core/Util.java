@@ -41,8 +41,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Util {
-    public static final String CROSS = "\u274C";
-    public static final String GREEN_TICK = "\u2714\uFE0F";
+    public static final String CROSS_MARK = "\u274C";
+    public static final String TICK_MARK = "\u2705";
     public static final String[][] progressBarEmotes = {
         {
             "<:PB01:892072629899505684>",
@@ -296,8 +296,8 @@ public class Util {
             eb.appendDescription("Nothin' playin' in 'ere. Party's o'er. Let's 'ave an after-party whaddaya think?");
         }
         eb.setFooter("Page " + (page + 1) + "/" + ((int) Math.ceil(queue.size() / 10.0))
-            + " | Loop: " + (player.isLoop() ? CROSS : GREEN_TICK)
-            + " | Queue Loop: " + (player.isLoopQueue() ? CROSS : GREEN_TICK));
+            + " | Loop: " + (player.isLoop() ? TICK_MARK : CROSS_MARK)
+            + " | Queue Loop: " + (player.isLoopQueue() ? TICK_MARK : CROSS_MARK));
         return eb;
     }
 

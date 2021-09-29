@@ -17,11 +17,12 @@ package net.vplaygames.vpm.core;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.vplaygames.vpm.player.MusicPlayer;
 import net.vplaygames.vpm.player.PlayerManager;
 
@@ -30,11 +31,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -42,45 +41,41 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Util {
-    public static String[][] progressBarEmotes = {
+    public static final String CROSS = "\u274C";
+    public static final String GREEN_TICK = "\u2714\uFE0F";
+    public static final String[][] progressBarEmotes = {
         {
-            "",
-            "",
-            "",
-            ""
+            "<:PB01:892072629899505684>",
+            "<:PB02:892072630461530122>",
+            "<:PB03:892072623519969332>"
         },
         {
-            "",
-            "",
-            "",
-            "",
-            ""
+            "<:PB10:892072617664712704>",
+            "<:PB11:892072617832509480>",
+            "<:PB12:892072617077530634>",
+            "<:PB13:892072616268034059>",
+            "<:PB14:892072617069146192>"
         },
         {
-            "",
-            "",
-            "",
-            ""
+            "<:PB20:892072617962508348>",
+            "<:PB21:892072627043196999>",
+            "<:PB22:892072627005440040>",
+            "<:PB23:892072618176426074> "
         }
     };
+    public static Pattern DELIMITER = Pattern.compile("[\n\\s]");
 
     private Util() {
         // Utility Class
     }
 
+    public static String getProgressBar(AudioTrack track, int bars) {
+        return getProgressBar(track.getPosition(), track.getDuration(), bars);
+    }
+
     public static String getProgressBar(long progress, long total, int bars) {
         int percent = (int) Math.ceil(progress * (bars * 3 + 5.0) / total);
         StringBuilder tor = new StringBuilder();
-        for (int i = 0; i < progressBarEmotes.length; i++) {
-            String[] bar = progressBarEmotes[i];
-            if (progress > bar.length - 1) {
-
-            }
-            if (i == 1 && bars > 1) {
-                i--;
-                bars--;
-            }
-        }
         switch (percent) {
             case 0:
                 // Shouldn't happen
@@ -101,41 +96,41 @@ public class Util {
         for (int i = 1; i <= bars; i++) {
             switch (percent) {
                 case 0:
-                    tor.append(progressBarEmotes[0][0]);
+                    tor.append(progressBarEmotes[1][0]);
                     break;
                 case 1:
                     percent -= 1;
-                    tor.append(progressBarEmotes[0][1]);
+                    tor.append(progressBarEmotes[1][1]);
                     break;
                 case 2:
                     percent -= 2;
-                    tor.append(progressBarEmotes[0][2]);
+                    tor.append(progressBarEmotes[1][2]);
                     break;
                 case 3:
                     percent -= 3;
-                    tor.append(progressBarEmotes[0][3]);
+                    tor.append(progressBarEmotes[1][3]);
                     break;
                 default:
                     percent -= 3;
-                    tor.append(progressBarEmotes[0][4]);
+                    tor.append(progressBarEmotes[1][4]);
                     break;
             }
         }
         switch (percent) {
             case 0:
-                tor.append(progressBarEmotes[0][0]);
+                tor.append(progressBarEmotes[2][0]);
                 break;
             case 1:
                 percent -= 1;
-                tor.append(progressBarEmotes[0][1]);
+                tor.append(progressBarEmotes[2][1]);
                 break;
             case 2:
                 percent -= 2;
-                tor.append(progressBarEmotes[0][2]);
+                tor.append(progressBarEmotes[2][2]);
                 break;
             case 3:
                 percent -= 3;
-                tor.append(progressBarEmotes[0][3]);
+                tor.append(progressBarEmotes[2][3]);
                 break;
             default:
                 // Shouldn't happen
@@ -172,10 +167,10 @@ public class Util {
             return false;
         }
         e.getGuild().getAudioManager().openAudioConnection(targetVC);
-        e.send("Connected to " + targetVC.getAsMention()).queue();
+        e.send("Connected to " + targetVC.getAsMention()).append("\n");
         MusicPlayer player = PlayerManager.getPlayer(e.getGuild());
         if (!e.getChannel().equals(player.getBoundChannel())) {
-            e.send("Bound to " + ((GuildChannel) e.getChannel()).getAsMention()).queue();
+            e.send("Bound to " + ((GuildChannel) e.getChannel()).getAsMention()).append("\n");
             player.setBoundChannel(e.getChannel().getIdLong());
         }
         return true;
@@ -195,7 +190,7 @@ public class Util {
     }
 
     public static String toString(AudioTrackInfo info) {
-        return "`" + info.title + "` by `" + info.author + "` Link: <" + info.uri + "> (" + toString(info.length) + ")";
+        return "`" + info.title + "` by `" + info.author + "` (" + toString(info.length) + ")\n<" + info.uri + ">";
     }
 
     public static String toString(long ms) {
@@ -211,22 +206,6 @@ public class Util {
             .stream()
             .filter(member -> !(member.getUser().isBot() || member.getVoiceState().isDeafened()))
             .collect(Collectors.toList());
-    }
-
-    public static String repeat(char c, int count) {
-        StringBuilder tor = new StringBuilder();
-        while (count-- > 0) tor.append(c);
-        return tor.toString();
-    }
-
-    public static String dateTimeNow() {
-        String lt = LocalTime.now().toString();
-        lt = lt.substring(0, lt.length() - 4);
-        if (Util.toInt(lt.substring(0, 2)) > 12)
-            lt = Util.toInt(lt.substring(0, 2)) - 12 + lt.substring(2) + " PM";
-        else
-            lt += " AM";
-        return "on " + LocalDate.now().toString() + " at " + lt + " (" + TimeZone.getDefault().getDisplayName(false, 0) + ")";
     }
 
     public static File makeFileOf(Object toBeWritten, String fileName) {
@@ -261,22 +240,83 @@ public class Util {
         return s.substring(s.indexOf(':') + 1);
     }
 
-    public static String toProperCase(String a) {
-        String[] b = a.split(" ");
-        for (int i = 0; i < b.length; i++)
-            b[i] = b[i].toUpperCase().charAt(0) + b[i].substring(1).toLowerCase();
-        return String.join(" ", b);
+    public static String toProperCase(String s) {
+        boolean capitalNextLetter = true;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (Character.isLetter(c))
+                if (capitalNextLetter)
+                    sb.append(Character.toUpperCase(c));
+                else
+                    sb.append(Character.toLowerCase(c));
+            else
+                sb.append(c);
+            capitalNextLetter = DELIMITER.matcher(Character.toString(c)).matches();
+        }
+        return sb.toString();
     }
 
-    public static int toInt(String a) {
+    public static int toInt(String s) {
+        int sign = s.charAt(0) == '-' ? -1 : +1;
         int tor = 0;
-        for (int i = 0; i < a.length(); i++) {
-            char c = a.charAt(i);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
             if ('0' <= c && c <= '9') {
                 tor = tor * 10 + c - '0';
             }
         }
-        return tor;
+        return tor * sign;
+    }
+
+    public static EmbedBuilder createEmbed(Guild guild, int page) {
+        MusicPlayer player = PlayerManager.getPlayer(guild);
+        AudioTrack track = player.getPlayingTrack();
+        List<AudioTrack> queue = player.getQueue();
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle(guild.getName());
+        eb.appendDescription("**__Now Playing__:**\n");
+        if (track != null) {
+            AudioTrackInfo info = track.getInfo();
+            eb.appendDescription("[" + info.title + "](" + info.uri + ") by " + info.author + "\n")
+                .appendDescription(Util.getProgressBar(track, 12))
+                .appendDescription(" ")
+                .appendDescription(Util.toString(track.getPosition()))
+                .appendDescription("/")
+                .appendDescription(Util.toString(track.getDuration()))
+                .appendDescription("\n\n**__Up Next__:**\n");
+            if (queue.size() != 0) {
+                eb.appendDescription(listTracks(queue, page, 10))
+                    .appendDescription("\n\nQueue size: ")
+                    .appendDescription(toString(queue.stream().mapToLong(AudioTrack::getDuration).sum()));
+            } else {
+                eb.appendDescription("*cricket cricket*");
+            }
+        } else {
+            eb.appendDescription("Nothin' playin' in 'ere. Party's o'er. Let's 'ave an after-party whaddaya think?");
+        }
+        eb.setFooter("Page " + (page + 1) + "/" + ((int) Math.ceil(queue.size() / 10.0))
+            + " | Loop: " + (player.isLoop() ? CROSS : GREEN_TICK)
+            + " | Queue Loop: " + (player.isLoopQueue() ? CROSS : GREEN_TICK));
+        return eb;
+    }
+
+    public static ActionRow createButtons(int page) {
+        return ActionRow.of(
+            Button.primary("queue:" + (page - 1), Emoji.fromUnicode("\u25C0")), // ◀ (Previous)
+            Button.primary("queue:" + page, Emoji.fromUnicode("\uD83D\uDD04")), // 🔄 (Refresh)
+            Button.primary("queue:" + (page + 1), Emoji.fromUnicode("\u25B6")) // ▶ (Next))
+        );
+    }
+
+    public static String listTracks(List<AudioTrack> queue, int page, int limit) {
+        AtomicInteger i = new AtomicInteger(page * 10);
+        return queue.stream()
+            .skip(page * limit)
+            .limit(limit)
+            .map(AudioTrack::getInfo)
+            .map(info -> i.incrementAndGet() + ". [" + info.title + "](" + info.uri + ") by " + info.author + " (" + toString(info.length) + ")")
+            .collect(Collectors.joining("\n"));
     }
 
     public static boolean equalsAnyIgnoreCase(String b, String... a) {

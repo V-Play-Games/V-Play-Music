@@ -20,12 +20,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.vplaygames.vpm.commands.AbstractBotCommand;
 import net.vplaygames.vpm.core.CommandReceivedEvent;
-
-import java.util.regex.Pattern;
+import net.vplaygames.vpm.core.Util;
 
 public class CaseCommand extends AbstractBotCommand {
-    static Pattern delimiter = Pattern.compile("[\n\\s]");
-
     public CaseCommand() {
         super("case", "Changes the case of the given content");
         addOptions(
@@ -64,20 +61,7 @@ public class CaseCommand extends AbstractBotCommand {
                 break;
             case "proper":
             case "p":
-                boolean capitalNextLetter = true;
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < input.length(); i++) {
-                    char c = input.charAt(i);
-                    if (Character.isLetter(c))
-                        if (capitalNextLetter)
-                            sb.append(Character.toUpperCase(c));
-                        else
-                            sb.append(Character.toLowerCase(c));
-                    else
-                        sb.append(c);
-                    capitalNextLetter = delimiter.matcher(Character.toString(c)).matches();
-                }
-                input = sb.toString();
+                input = Util.toProperCase(input);
                 break;
             default:
                 input = "Invalid Case!";

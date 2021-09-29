@@ -15,6 +15,8 @@ public class JoinCommand extends SharedImplementationCommand {
         if (e.getArgs().size() == 2 && e.getAuthor().getIdLong() == Bot.BOT_OWNER) {
 
         }
-        Util.canJoinVC(e);
+        if (Util.canJoinVC(e)) {
+            e.send("").queue();
+        }
     }
 }

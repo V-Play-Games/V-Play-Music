@@ -17,19 +17,17 @@ public class NowPlayingCommand extends SharedImplementationCommand {
     public void execute(CommandReceivedEvent e) {
         AudioTrack track = PlayerManager.getPlayer(e.getGuild()).getPlayingTrack();
         if (track == null) {
-            e.send("There's nothing playin' in 'ere. Party's over. Let's have an after party whaddaya think?").queue();
+            e.send("There's nothin' playin' in 'ere. Party's o'er. Let's have an after party whaddaya think?").queue();
             return;
         }
         AudioTrackInfo info = track.getInfo();
-        int progress = (int) (track.getPosition() * 12 / info.length);
         e.send(new EmbedBuilder()
             .setTitle(info.title, info.uri)
-            .appendDescription(Util.toString(info.length))
-            .appendDescription("/")
+            .appendDescription(Util.getProgressBar(track, 12))
+            .appendDescription(" ")
             .appendDescription(Util.toString(track.getPosition()))
-            .appendDescription("\n")
-            .appendDescription(Util.repeat('-', progress))
-            .appendDescription(Util.repeat('_', 12 - progress))
+            .appendDescription("/")
+            .appendDescription(Util.toString(track.getDuration()))
             .build(), "now playing")
             .queue();
     }

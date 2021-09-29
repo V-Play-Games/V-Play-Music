@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vplaygames.vpm.commands.AbstractBotCommand;
 
-import javax.annotation.CheckReturnValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +61,7 @@ public class CommandReceivedEvent implements Sender {
             false);
         this.args = Arrays.asList(args);
         this.message = e.getMessage();
-        action = new CommandReplyAction(null, message, this::log);
+        action = new CommandReplyAction(null, message, this::log).mentionRepliedUser(false);
     }
 
     public CommandReceivedEvent(SlashCommandEvent e, AbstractBotCommand command) {
@@ -77,7 +76,7 @@ public class CommandReceivedEvent implements Sender {
             e.getTimeCreated(),
             true);
         slash = e;
-        action = new CommandReplyAction(e, null, this::log);
+        action = new CommandReplyAction(e, null, this::log).mentionRepliedUser(false);
     }
 
     public CommandReceivedEvent(JDA api,
@@ -168,18 +167,14 @@ public class CommandReceivedEvent implements Sender {
         output += response + "\n";
     }
 
-    @CheckReturnValue
     public CommandReplyAction send(String content) {
         responded(content);
-        action.append(content);
-        return action;
+        return action.append(content);
     }
 
-    @CheckReturnValue
     public CommandReplyAction send(MessageEmbed embed, String placeholder) {
         responded(placeholder);
-        action.addEmbeds(embed);
-        return action;
+        return action.addEmbeds(embed);
     }
 
     public void reportTrouble(Throwable t) {

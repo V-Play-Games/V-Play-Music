@@ -204,9 +204,8 @@ public class Bot {
             buttonHandlers.put(handler.getName(), handler);
             System.out.println("Loaded " + handler.getName() + " button handler");
         });
-        Set<AbstractBotCommand> commandSet = new HashSet<>(commands.values());
         getPrimaryShard().updateCommands()
-            .addCommands(commandSet)
+            .addCommands(new HashSet<>(commands.values()))
             .queue(c -> c.forEach(command -> commands.get(command.getName()).finalizeCommand(command)));
     }
 

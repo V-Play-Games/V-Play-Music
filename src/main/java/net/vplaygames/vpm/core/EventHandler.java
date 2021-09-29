@@ -78,8 +78,8 @@ public class EventHandler extends ListenerAdapter {
             } else if (!e.getAuthor().isBot() && (!e.isFromGuild() || ((TextChannel) e.getChannel()).canTalk())) {
                 Message message = e.getMessage();
                 String content = message.getContentRaw();
-                String[] args = content.split("[\n\\s]+");
-                if (content.toLowerCase().startsWith(Bot.PREFIX)) {
+                String[] args = Util.DELIMITER.split(content);
+                if (content.regionMatches(true, 0, Bot.PREFIX, 0, Bot.PREFIX.length())) {
                     Optional.ofNullable(Bot.commands.get(args[0].substring(Bot.PREFIX.length()).toLowerCase()))
                         .ifPresent(command -> CommandReceivedEvent.run(e, args, command));
                 } else if (getSelfMentionPattern().matcher(content).find()) {
@@ -133,9 +133,6 @@ public class EventHandler extends ListenerAdapter {
     public void onButtonClick(@Nonnull ButtonClickEvent e) {
         String method = Util.getMethod(e.getComponentId());
         String[] args = Util.getArgs(e.getComponentId()).split(":");
-        ButtonHandler handler = Bot.buttonHandlers.get(method);
-        if (handler.isValidClick(e, args)) {
-            handler.handle(e, args);
-        }
+        Bot.buttonHandlers.get(method).handle(e, args);
     }
 }

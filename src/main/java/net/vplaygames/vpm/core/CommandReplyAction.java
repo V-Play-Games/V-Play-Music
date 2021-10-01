@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -21,33 +22,43 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "ResultOfMethodCallIgnored"})
 public class CommandReplyAction {
-    private boolean isReply;
+    private boolean isInteraction;
     private ReplyAction reply;
     private MessageAction message;
     private String content = "";
     private Runnable afterQueueTasks;
 
     public CommandReplyAction(Message message) {
-        this(null, message);
+        this(null, message, null);
     }
 
     public CommandReplyAction(Interaction interaction) {
-        this(interaction, null);
+        this(interaction, null, null);
     }
 
-    public CommandReplyAction(Interaction interaction, Message message) {
-        this(interaction, message, null);
+    public CommandReplyAction(TextChannel tc) {
+        this(null, tc.sendMessage(" "), null);
     }
 
     public CommandReplyAction(Interaction interaction, Message message, Runnable afterQueueTasks) {
+        this(interaction != null ? interaction.deferReply() : null,
+            message != null ? message.reply(" ") : null,
+            afterQueueTasks);
+    }
+
+    public CommandReplyAction(ReplyAction interaction, MessageAction message, Runnable afterQueueTasks) {
         this.afterQueueTasks = afterQueueTasks;
         if (interaction != null) {
-            this.reply = interaction.deferReply();
-            isReply = true;
+            this.reply = interaction;
+            isInteraction = true;
         } else {
-            this.message = message.reply(" ");
-            isReply = false;
+            this.message = message;
+            isInteraction = false;
         }
+    }
+
+    public void setAfterQueueTasks(Runnable afterQueueTasks) {
+        this.afterQueueTasks = afterQueueTasks;
     }
 
     public String getContent() {
@@ -55,7 +66,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction setContent(String content) {
-        if (isReply) {
+        if (isInteraction) {
             reply.setContent(content);
         } else {
             message.content(content);
@@ -65,14 +76,14 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction setEphemeral(boolean ephemeral) {
-        if (isReply) {
+        if (isInteraction) {
             reply.setEphemeral(ephemeral);
         }
         return this;
     }
 
     public CommandReplyAction addFile(InputStream data, String name, AttachmentOption... options) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addFile(data, name, options);
         } else {
             message.addFile(data, name, options);
@@ -81,7 +92,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addEmbeds(Collection<? extends MessageEmbed> embeds) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addEmbeds(embeds);
         } else {
             message.setEmbeds(embeds);
@@ -90,7 +101,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addActionRows(ActionRow... rows) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addActionRows(rows);
         } else {
             message.setActionRows(rows);
@@ -99,7 +110,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction timeout(long timeout, TimeUnit unit) {
-        if (isReply) {
+        if (isInteraction) {
             reply.timeout(timeout, unit);
         } else {
             message.timeout(timeout, unit);
@@ -108,7 +119,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction deadline(long timestamp) {
-        if (isReply) {
+        if (isInteraction) {
             reply.deadline(timestamp);
         } else {
             message.deadline(timestamp);
@@ -117,7 +128,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction setTTS(boolean isTTS) {
-        if (isReply) {
+        if (isInteraction) {
             reply.setTTS(isTTS);
         } else {
             message.tts(isTTS);
@@ -126,7 +137,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction mentionRepliedUser(boolean mention) {
-        if (isReply) {
+        if (isInteraction) {
             reply.mentionRepliedUser(mention);
         } else {
             message.mentionRepliedUser(mention);
@@ -135,7 +146,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction allowedMentions(Collection<Message.MentionType> allowedMentions) {
-        if (isReply) {
+        if (isInteraction) {
             reply.allowedMentions(allowedMentions);
         } else {
             message.allowedMentions(allowedMentions);
@@ -144,7 +155,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction mention(IMentionable... mentions) {
-        if (isReply) {
+        if (isInteraction) {
             reply.mention(mentions);
         } else {
             message.mention(mentions);
@@ -153,7 +164,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction mentionUsers(String... userIds) {
-        if (isReply) {
+        if (isInteraction) {
             reply.mentionUsers(userIds);
         } else {
             message.mentionUsers(userIds);
@@ -162,7 +173,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction mentionRoles(String... roleIds) {
-        if (isReply) {
+        if (isInteraction) {
             reply.mentionRoles(roleIds);
         } else {
             message.mentionRoles(roleIds);
@@ -171,7 +182,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addEmbeds(MessageEmbed... embeds) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addEmbeds(embeds);
         } else {
             message.setEmbeds(embeds);
@@ -180,7 +191,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addActionRow(Component... components) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addActionRow(components);
         } else {
             message.setActionRow(components);
@@ -189,7 +200,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addActionRow(Collection<? extends Component> components) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addActionRow(components);
         } else {
             message.setActionRow(components);
@@ -198,7 +209,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addActionRows(Collection<? extends ActionRow> rows) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addActionRows(rows);
         } else {
             message.setActionRows(rows);
@@ -207,7 +218,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addFile(File file, AttachmentOption... options) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addFile(file, options);
         } else {
             message.addFile(file, options);
@@ -216,7 +227,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addFile(File file, String name, AttachmentOption... options) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addFile(file, name, options);
         } else {
             message.addFile(file, name, options);
@@ -225,7 +236,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction addFile(byte[] data, String name, AttachmentOption... options) {
-        if (isReply) {
+        if (isInteraction) {
             reply.addFile(data, name, options);
         } else {
             message.addFile(data, name, options);
@@ -235,7 +246,7 @@ public class CommandReplyAction {
 
     public CommandReplyAction append(String s) {
         content += s;
-        if (isReply) {
+        if (isInteraction) {
             reply.setContent(content);
         } else {
             message.content(content);
@@ -244,7 +255,7 @@ public class CommandReplyAction {
     }
 
     public CompletableFuture<Object> submit(boolean shouldQueue) {
-        CompletableFuture<?> future = isReply ? reply.submit(shouldQueue) : message.submit(shouldQueue);
+        CompletableFuture<?> future = isInteraction ? reply.submit(shouldQueue) : message.submit(shouldQueue);
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return future.get();
@@ -256,7 +267,7 @@ public class CommandReplyAction {
     }
 
     public JDA getJDA() {
-        if (isReply) {
+        if (isInteraction) {
             return reply.getJDA();
         } else {
             return message.getJDA();
@@ -264,7 +275,7 @@ public class CommandReplyAction {
     }
 
     public BooleanSupplier getCheck() {
-        if (isReply) {
+        if (isInteraction) {
             return reply.getCheck();
         } else {
             return message.getCheck();
@@ -272,7 +283,7 @@ public class CommandReplyAction {
     }
 
     public CommandReplyAction setCheck(BooleanSupplier checks) {
-        if (isReply) {
+        if (isInteraction) {
             reply.setCheck(checks);
         } else {
             message.setCheck(checks);
@@ -281,7 +292,7 @@ public class CommandReplyAction {
     }
 
     public Object complete(boolean shouldQueue) throws RateLimitedException {
-        if (isReply) {
+        if (isInteraction) {
             return reply.complete(shouldQueue);
         } else {
             return message.complete(shouldQueue);
@@ -297,7 +308,7 @@ public class CommandReplyAction {
     }
 
     public void queue(Consumer<? super Object> success, Consumer<? super Throwable> failure) {
-        if (isReply) {
+        if (isInteraction) {
             reply.queue(success, failure);
         } else {
             message.queue(success, failure);
@@ -308,7 +319,7 @@ public class CommandReplyAction {
     }
 
     public Object complete() {
-        if (isReply) {
+        if (isInteraction) {
             return reply.complete();
         } else {
             return message.complete();
@@ -341,7 +352,7 @@ public class CommandReplyAction {
 
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super Object> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor) {
         ScheduledFuture<?> tor;
-        if (isReply) {
+        if (isInteraction) {
             tor = reply.queueAfter(delay, unit, success, failure, executor);
         } else {
             tor = message.queueAfter(delay, unit, success, failure, executor);

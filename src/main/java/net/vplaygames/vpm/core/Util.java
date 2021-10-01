@@ -17,8 +17,9 @@ package net.vplaygames.vpm.core;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 
 public class Util {
     public static final String CROSS_MARK = "\u274C";
-    public static final String TICK_MARK = "\u2705";
+    public static final String CHECK_MARK = "\u2705";
     public static final String[][] progressBarEmotes = {
         {
             "<:PB01:892072629899505684>",
@@ -190,7 +191,7 @@ public class Util {
     }
 
     public static String toString(AudioTrackInfo info) {
-        return "`" + info.title + "` by `" + info.author + "` (" + toString(info.length) + ")\n<" + info.uri + ">";
+        return "`" + (info.title) + "` by `" + info.author + "` (" + toString(info.length) + ")\n<" + info.uri + ">";
     }
 
     public static String toString(long ms) {
@@ -269,48 +270,8 @@ public class Util {
         return tor * sign;
     }
 
-    public static EmbedBuilder createEmbed(Guild guild, int page) {
-        MusicPlayer player = PlayerManager.getPlayer(guild);
-        AudioTrack track = player.getPlayingTrack();
-        List<AudioTrack> queue = player.getQueue();
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(guild.getName());
-        eb.appendDescription("**__Now Playing__:**\n");
-        if (track != null) {
-            AudioTrackInfo info = track.getInfo();
-            eb.appendDescription("[" + info.title + "](" + info.uri + ") by " + info.author + "\n")
-                .appendDescription(Util.getProgressBar(track, 12))
-                .appendDescription(" ")
-                .appendDescription(Util.toString(track.getPosition()))
-                .appendDescription("/")
-                .appendDescription(Util.toString(track.getDuration()))
-                .appendDescription("\n\n**__Up Next__:**\n");
-            if (queue.isEmpty()) {
-                eb.appendDescription("Emptiness, my old friend~");
-            } else {
-                eb.appendDescription(listTracks(queue, page, 10))
-                    .appendDescription("\n\nQueue Length: ")
-                    .appendDescription(toString(queue.stream().mapToLong(AudioTrack::getDuration).sum()));
-            }
-        } else {
-            eb.appendDescription("Nothin' playin' in 'ere. Party's o'er. Let's 'ave an after-party whaddaya think?");
-        }
-        eb.setFooter((queue.isEmpty() ? "" : "Page " + (page + 1) + "/" + ((int) Math.ceil(queue.size() / 10.0)) + " | ")
-            + "Loop: " + (player.isLoop() ? TICK_MARK : CROSS_MARK)
-            + " | Queue Loop: " + (player.isLoopQueue() ? TICK_MARK : CROSS_MARK));
-        return eb;
-    }
-
-    public static ActionRow createButtons(int page) {
-        return ActionRow.of(
-            Button.primary("queue:" + (page - 1), Emoji.fromUnicode("\u25C0")), // ◀ (Previous)
-            Button.primary("queue:" + page, Emoji.fromUnicode("\uD83D\uDD04")), // 🔄 (Refresh)
-            Button.primary("queue:" + (page + 1), Emoji.fromUnicode("\u25B6")) // ▶ (Next))
-        );
-    }
-
-    public static String listTracks(List<AudioTrack> queue, int page, int limit) {
-        AtomicInteger i = new AtomicInteger(page * 10);
+    public static String listTracks(List<AudioTrack> queue, int page, int limit, boolean startWithOne) {
+        AtomicInteger i = new AtomicInteger(page * limit * (startWithOne ? 0 : 1));
         return queue.stream()
             .skip(page * limit)
             .limit(limit)

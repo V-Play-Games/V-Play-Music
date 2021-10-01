@@ -15,6 +15,7 @@
  */
 package net.vplaygames.vpm.core;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
@@ -57,11 +58,11 @@ public class Bot {
     public static final int MAX_SHARDS = 10;
     public static final AtomicLong lastCommandId = new AtomicLong(1);
     public static final Map<String, Guess> guessMap = new HashMap<>();
-    public static final Map<String, ActionHandler> actionHandlers = new HashMap<>();
     public static final Map<String, ButtonHandler> buttonHandlers = new HashMap<>();
     public static final Map<String, EntityInitInfo<?>> initInfoMap = new HashMap<>();
     public static final Map<Long, GuessGame> guessGamePlayers = new HashMap<>();
     public static final Map<String, AbstractBotCommand> commands = new HashMap<>();
+    public static final Map<String, List<AudioTrack>> searchResults = new HashMap<>();
     public static final Map<Integer, Long> loggers = new HashMap<>();
     public static ShardManager shardManager;
     public static ScanResult scanResult;
@@ -196,10 +197,6 @@ public class Bot {
 
     public static void loadCommands() {
         loadAllInstancesOf(BotCommand.class, o -> System.out.println("Loaded " + o + " Command"));
-        loadAllInstancesOf(ActionHandler.class, handler -> {
-            actionHandlers.put(handler.getName(), handler);
-            System.out.println("Loaded " + handler.getName() + " action handler");
-        });
         loadAllInstancesOf(ButtonHandler.class, handler -> {
             buttonHandlers.put(handler.getName(), handler);
             System.out.println("Loaded " + handler.getName() + " button handler");

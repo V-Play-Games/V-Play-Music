@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.utils.MarkdownUtil;
 import net.vplaygames.vpm.player.MusicPlayer;
 import net.vplaygames.vpm.player.PlayerManager;
 
@@ -56,32 +57,29 @@ public class SharedImplementation {
     }
 
     public static class Search {
+        public static EmbedBuilder createEmbed(List<AudioTrack> results, int page) {
+            return createEmbed(results, page, -1);
+        }
+
         public static EmbedBuilder createEmbed(List<AudioTrack> results, int page, int choice) {
             EmbedBuilder eb = new EmbedBuilder();
             String[] tracks = Util.listTracks(results, page, 5, true).split("\n");
-            for (int i = 0; i < tracks.length; i++) {
-                if (i != choice) {
-                    tracks[i] = "~~" + tracks[i] + "~~";
-                } else {
-                    tracks[i] = "**" + tracks[i] + "**";
+            if (0 <= choice && choice < tracks.length)
+                for (int i = 0; i < tracks.length; i++) {
+                    if (i != choice) {
+                        tracks[i] = MarkdownUtil.strike(tracks[i]);
+                    } else {
+                        tracks[i] = MarkdownUtil.bold(tracks[i]);
+                    }
                 }
-            }
             eb.setTitle("Search Results")
                 .appendDescription(String.join("\n", tracks))
                 .setFooter("Page " + (page + 1) + "/" + ((int) Math.ceil(results.size() / 5.0)));
             return eb;
         }
 
-        public static EmbedBuilder createEmbed(List<AudioTrack> results, int page) {
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle("Search Results")
-                .appendDescription(Util.listTracks(results, page, 5, true))
-                .setFooter("Page " + (page + 1) + "/" + ((int) Math.ceil(results.size() / 5.0)));
-            return eb;
-        }
-
-        public static ActionRow[] createRows(List<AudioTrack> results, String id, int page) {
-            String prefix = "search:" + id + ":" + page + ":";
+        public static ActionRow[] createRows(List<AudioTrack> results, String userId, String resultId, int page) {
+            String prefix = "search:" + userId + ":" + resultId + ":" + page + ":";
             int remaining = results.size() - (page * 5);
             return new ActionRow[]{
                 ActionRow.of(

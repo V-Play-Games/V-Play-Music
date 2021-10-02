@@ -34,7 +34,7 @@ public class RemoveCommand extends AbstractBotCommand {
             e.send("Invalid index.").queue();
             return;
         }
-        AudioTrack track = queue.remove(index);
+        AudioTrack track = queue.remove(index - 1);
         if (track == null) {
             e.send("Something went wrong, Please try again later").queue();
             return;

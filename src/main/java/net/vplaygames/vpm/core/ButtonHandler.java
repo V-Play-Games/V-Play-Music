@@ -39,16 +39,19 @@ public interface ButtonHandler {
 
         @Override
         public void handle(ButtonClickEvent e, String[] args) {
-            String id = args[0];
+            if (e.getUser().getId().equals(args[0])) {
+                return;
+            }
+            String id = args[1];
             List<AudioTrack> results = Bot.searchResults.get(id);
             if (results == null) {
                 e.reply("The search option has already been chosen, please search again.").setEphemeral(true).queue();
                 return;
             }
-            int page = Util.toInt(args[1]);
-            switch (args[2]) {
+            int page = Util.toInt(args[2]);
+            switch (args[3]) {
                 case "c":
-                    int choice = Util.toInt(args[3]);
+                    int choice = Util.toInt(args[4]);
                     AudioTrack track = results.get(page * 5 + choice);
                     PlayerManager.getPlayer(e.getGuild()).queue(Sender.fromMessage(e.getMessage()), track);
 
@@ -79,7 +82,7 @@ public interface ButtonHandler {
                     e.reply("Failed to perform action, please contact VPG").queue();
                     return;
             }
-            e.editComponents(SharedImplementation.Search.createRows(results, id, page))
+            e.editComponents(SharedImplementation.Search.createRows(results, e.getUser().getId(), id, page))
                 .setEmbeds(SharedImplementation.Search.createEmbed(results, page).build())
                 .queue();
         }

@@ -15,7 +15,7 @@ import net.vplaygames.vpm.player.PlayerManager;
 
 public class SearchCommand extends AbstractBotCommand {
     public SearchCommand() {
-        super("search", "Searches a track", "p");
+        super("search", "Searches a track");
         setMinArgs(1);
         addOption(OptionType.STRING, "track", "Type the name of the song you want to search", true);
     }
@@ -46,7 +46,7 @@ public class SearchCommand extends AbstractBotCommand {
             public void playlistLoaded(AudioPlaylist playlist) {
                 Bot.searchResults.put(id, playlist.getTracks());
                 e.send(SharedImplementation.Search.createEmbed(playlist.getTracks(), 0).build(), "Search Results")
-                    .addActionRows(SharedImplementation.Search.createRows(playlist.getTracks(), id, 0))
+                    .addActionRows(SharedImplementation.Search.createRows(playlist.getTracks(), e.getAuthor().getId(), id, 0))
                     .queue();
             }
 

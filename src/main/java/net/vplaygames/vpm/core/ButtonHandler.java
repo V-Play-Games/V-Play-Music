@@ -39,7 +39,7 @@ public interface ButtonHandler {
 
         @Override
         public void handle(ButtonClickEvent e, String[] args) {
-            if (e.getUser().getId().equals(args[0])) {
+            if (!e.getUser().getId().equals(args[0])) {
                 return;
             }
             String id = args[1];

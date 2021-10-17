@@ -31,7 +31,7 @@ public class PlayCommand extends AbstractBotCommand {
         while (track.startsWith("<") && track.endsWith(">")) {
             track = track.substring(1, track.length() - 1);
         }
-        if (!Util.isUri(track)) {
+        if (!Util.isUri(track) && !track.startsWith("scsearch:")) {
             track = "ytsearch:" + track;
         }
         PlayerManager.getInstance().loadAndPlay(e, track, false);

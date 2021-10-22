@@ -58,7 +58,7 @@ public class EventHandler extends ListenerAdapter {
                 .appendDescription(" V Play Games aka VPG (<@" + Bot.BOT_OWNER + ">)")
                 .addField("Developer", "<@" + Bot.BOT_OWNER + ">", true)
                 .addField("Version", Bot.VERSION, true)
-                .addField("Server Count", String.valueOf(e.getJDA().getGuilds().size()), false)
+                .addField("Server Count", String.valueOf(Bot.getShardManager().getGuilds().size()), false)
                 .setTimestamp(Instant.now())
                 .setThumbnail(e.getJDA().getSelfUser().getAvatarUrl())
                 .setColor(0x1abc9c)

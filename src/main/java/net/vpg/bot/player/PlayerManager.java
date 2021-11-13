@@ -28,8 +28,8 @@ import java.util.Map;
 
 public class PlayerManager extends DefaultAudioPlayerManager implements Iterable<MusicPlayer> {
     private static final Map<String, PlayerManager> managers = new HashMap<>();
-    private final Map<Long, MusicPlayer> players = new HashMap<>();
     final Bot bot;
+    private final Map<Long, MusicPlayer> players = new HashMap<>();
 
     private PlayerManager(Bot bot) {
         this.bot = bot;

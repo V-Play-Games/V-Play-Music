@@ -18,7 +18,6 @@ package net.vpg.bot.commands.owner;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.vpg.bot.commands.manager.RetrieveCommand;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.framework.Bot;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 public class RetrieveCommandImpl extends RetrieveCommand {
     public RetrieveCommandImpl(Bot bot) {
         super(bot);
-        addOption(OptionType.STRING, "key","Key of the information required", true);
     }
 
     @SuppressWarnings("ConstantConditions")

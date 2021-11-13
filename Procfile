@@ -1,1 +1,1 @@
-worker: sh target/bin/VPlayGamesBotRunner
+worker: sh target/bin/BotRunner

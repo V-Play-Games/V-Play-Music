@@ -1,7 +1,7 @@
 {
   "prefix": ".",
   "ownerId": 701660977258561557,
-  "maxShards": 1,
+  "maxShards": 10,
   "resourceServer": 891356944927961108,
   "logCategory": 891362232066256906,
   "support_server_invite": "https://discord.gg/PJN5nzGA8W",

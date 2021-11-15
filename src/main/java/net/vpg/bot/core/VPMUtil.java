@@ -37,14 +37,11 @@ import java.util.stream.Collectors;
 public class VPMUtil {
     public static final String CROSS_MARK = "\u274C";
     public static final String CHECK_MARK = "\u2705";
-    public static final String[][] progressBar;
-
-    static {
-        progressBar = DataArray.fromJson(Driver.class.getResourceAsStream("emotes.json"))
+    public static final String[][] progressBar =
+        DataArray.fromJson(Driver.class.getResourceAsStream("emotes.json"))
             .stream(DataArray::getArray)
             .map(data -> data.stream(DataArray::getString).toArray(String[]::new))
             .toArray(String[][]::new);
-    }
 
     private VPMUtil() {
         // Utility Class

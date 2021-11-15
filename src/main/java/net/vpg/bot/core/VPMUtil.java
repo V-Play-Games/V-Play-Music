@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.vpg.bot.Driver;
 import net.vpg.bot.framework.Util;
 import net.vpg.bot.framework.commands.CommandReceivedEvent;
 import net.vpg.bot.player.MusicPlayer;
@@ -35,29 +37,21 @@ import java.util.stream.Collectors;
 public class VPMUtil {
     public static final String CROSS_MARK = "\u274C";
     public static final String CHECK_MARK = "\u2705";
-    public static final String[][] progressBarEmotes = {
-        {
-            "<:PB01:892072629899505684>",
-            "<:PB02:892072630461530122>",
-            "<:PB03:892072623519969332>"
-        },
-        {
-            "<:PB10:892072617664712704>",
-            "<:PB11:892072617832509480>",
-            "<:PB12:892072617077530634>",
-            "<:PB13:892072616268034059>",
-            "<:PB14:892072617069146192>"
-        },
-        {
-            "<:PB20:892072617962508348>",
-            "<:PB21:892072627043196999>",
-            "<:PB22:892072627005440040>",
-            "<:PB23:892072618176426074> "
-        }
-    };
+    public static final String[][] progressBar;
+
+    static {
+        progressBar = DataArray.fromJson(Driver.class.getResourceAsStream("emotes.json"))
+            .stream(DataArray::getArray)
+            .map(data -> data.stream(DataArray::getString).toArray(String[]::new))
+            .toArray(String[][]::new);
+    }
 
     private VPMUtil() {
         // Utility Class
+    }
+
+    public static String getProgressBar(AudioTrack track) {
+        return getProgressBar(track, 12);
     }
 
     public static String getProgressBar(AudioTrack track, int bars) {
@@ -65,58 +59,32 @@ public class VPMUtil {
     }
 
     public static String getProgressBar(long progress, long total, int bars) {
-        int percent = (int) Math.ceil(progress * (bars * 3 + 5.0) / total);
+        int percent = (int) Math.ceil(progress * (bars * 3.0 + 5) / total);
         StringBuilder tor = new StringBuilder();
-        switch (percent) {
-            case 1:
-                percent -= 1;
-                tor.append(progressBarEmotes[0][0]);
-                break;
-            case 2:
-                percent -= 2;
-                tor.append(progressBarEmotes[0][1]);
-                break;
-            default:
-                percent -= 2;
-                tor.append(progressBarEmotes[0][2]);
-                break;
-        }
-        for (int i = 1; i <= bars; i++) {
+        for (int i = 0; i <= bars + 1; i++) {
+            // 0 -> start; 0 < i <= bars -> mid; i > bars -> end
+            String[] emotes = progressBar[i == 0 ? 0 : i > bars ? 2 : 1];
             switch (percent) {
                 case 0:
-                    tor.append(progressBarEmotes[1][0]);
+                    tor.append(emotes[0]);
                     break;
                 case 1:
                     percent -= 1;
-                    tor.append(progressBarEmotes[1][1]);
+                    tor.append(emotes[1]);
                     break;
                 case 2:
                     percent -= 2;
-                    tor.append(progressBarEmotes[1][2]);
+                    tor.append(emotes[2]);
                     break;
                 case 3:
                     percent -= 3;
-                    tor.append(progressBarEmotes[1][3]);
+                    tor.append(emotes[3]);
                     break;
                 default:
-                    percent -= 3;
-                    tor.append(progressBarEmotes[1][4]);
+                    percent -= emotes.length - 2;
+                    tor.append(emotes[emotes.length - 1]);
                     break;
             }
-        }
-        switch (percent) {
-            case 0:
-                tor.append(progressBarEmotes[2][0]);
-                break;
-            case 1:
-                tor.append(progressBarEmotes[2][1]);
-                break;
-            case 2:
-                tor.append(progressBarEmotes[2][2]);
-                break;
-            case 3:
-                tor.append(progressBarEmotes[2][3]);
-                break;
         }
         return tor.toString();
     }

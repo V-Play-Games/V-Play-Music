@@ -51,7 +51,7 @@ public class QueueCommand extends BotCommandImpl implements NoArgsCommand {
         if (track != null) {
             AudioTrackInfo info = track.getInfo();
             eb.appendDescription("[" + info.title + "](" + info.uri + ") by " + info.author + "\n")
-                .appendDescription(VPMUtil.getProgressBar(track, 12))
+                .appendDescription(VPMUtil.getProgressBar(track))
                 .appendDescription(" ")
                 .appendDescription(Util.toString(track.getPosition()))
                 .appendDescription("/")

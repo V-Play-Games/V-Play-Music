@@ -41,7 +41,7 @@ public class NowPlayingCommand extends BotCommandImpl implements NoArgsCommand {
         AudioTrackInfo info = track.getInfo();
         e.sendEmbeds(new EmbedBuilder()
             .setTitle(info.title, info.uri)
-            .appendDescription(VPMUtil.getProgressBar(track, 12))
+            .appendDescription(VPMUtil.getProgressBar(track))
             .appendDescription(" ")
             .appendDescription(Util.toString(track.getPosition()))
             .appendDescription("/")

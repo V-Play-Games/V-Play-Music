@@ -25,6 +25,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.vpg.bot.commands.CommandReceivedEvent;
@@ -60,6 +61,10 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
         this.bot = manager.bot;
         addListener(this);
         frame.setBuffer(buffer);
+    }
+
+    public Guild getGuild() {
+        return bot.getShardManager().getGuildById(guildId);
     }
 
     public boolean isLoop() {

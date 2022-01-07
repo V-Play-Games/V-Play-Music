@@ -30,9 +30,7 @@ public class LoopCommand extends BotCommandImpl implements NoArgsCommand {
 
     @Override
     public void execute(CommandReceivedEvent e) {
-        if (!VPMUtil.canJoinVC(e)) {
-            return;
-        }
+        if (!VPMUtil.canJoinVC(e)) return;
         MusicPlayer player = PlayerManager.getPlayer(e);
         player.toggleLoop();
         e.send("Set loop to " + player.isLoop()).queue();

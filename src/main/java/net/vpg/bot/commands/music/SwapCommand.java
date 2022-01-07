@@ -25,11 +25,11 @@ import net.vpg.bot.player.PlayerManager;
 
 import java.util.LinkedList;
 
-public class MoveCommand extends BotCommandImpl {
-    public MoveCommand(Bot bot) {
-        super(bot, "move", "Move songs through the queue");
-        addOption(OptionType.INTEGER, "from", "Index of the track to be removed", true);
-        addOption(OptionType.INTEGER, "to", "Index of the track to be removed", true);
+public class SwapCommand extends BotCommandImpl {
+    public SwapCommand(Bot bot) {
+        super(bot, "swap", "Swap songs through the queue");
+        addOption(OptionType.INTEGER, "swap1", "Index of the first track to swap", true);
+        addOption(OptionType.INTEGER, "swap2", "Index of the second track to swap", true);
         setMinArgs(2);
         setMaxArgs(2);
     }
@@ -41,32 +41,25 @@ public class MoveCommand extends BotCommandImpl {
 
     @Override
     public void onSlashCommandRun(CommandReceivedEvent e) {
-        execute(e, (int) e.getLong("from") - 1, (int) e.getLong("to") - 1);
+        execute(e, (int) e.getLong("swap1") - 1, (int) e.getLong("swap2") - 1);
     }
 
-    public void execute(CommandReceivedEvent e, int from, int to) {
-        if (!VPMUtil.canJoinVC(e)) {
-            return;
-        }
+    public void execute(CommandReceivedEvent e, int swap1, int swap2) {
+        if (!VPMUtil.canJoinVC(e)) return;
         LinkedList<AudioTrack> queue = PlayerManager.getPlayer(e).getQueue();
-        if (e.getArgs().size() != 4) {
-            e.send("Please provide a proper amount of arguments")
-                .append("\nFormat: `")
-                .append(e.getPrefix())
-                .append(getName())
-                .append(" move <from_index> <to_index>`")
-                .queue();
+        if (swap1 == swap2) {
+            e.send("Cannot swap the same index!").queue();
             return;
         }
-        if (from < 0 || to < 0) {
+        if (swap1 < 0 || swap2 < 0) {
             e.send("Index cannot be in negative!").queue();
+            return;
         }
-        if (from >= queue.size() || to >= queue.size()) {
+        if (swap1 >= queue.size() || swap2 >= queue.size()) {
             e.send("Index more than the queue size!").queue();
+            return;
         }
-        AudioTrack toMove = queue.get(from);
-        AudioTrack oldTrack = queue.set(to, toMove);
-        queue.set(from, oldTrack);
-        e.send("Switched " + from + " and " + to).queue();
+        queue.set(swap1, queue.set(swap2, queue.get(swap1)));
+        e.send("Swapped " + swap1 + " and " + swap2).queue();
     }
 }

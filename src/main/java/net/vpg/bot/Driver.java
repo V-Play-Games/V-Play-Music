@@ -15,6 +15,7 @@
  */
 package net.vpg.bot;
 
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.vpg.bot.database.Database;
@@ -27,6 +28,7 @@ public class Driver {
         Bot bot = new Bot(properties);
         properties.getArray("managers").stream(DataArray::getLong).forEach(bot::addManager);
         bot.setDatabase(new Database(System.getenv("DB_URL"), "BotData", bot));
+        bot.getShardManager().setPresence(OnlineStatus.INVISIBLE, null);
         bot.login();
     }
 }

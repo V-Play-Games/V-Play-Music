@@ -41,12 +41,11 @@ public class QueueCommand extends BotCommandImpl implements NoArgsCommand {
         super(bot, "queue", "View the queue", "q");
     }
 
-    public static EmbedBuilder createEmbed(Bot bot, Guild guild, int page) {
-        MusicPlayer player = PlayerManager.getPlayer(bot, guild);
+    public static EmbedBuilder createEmbed(MusicPlayer player, int page) {
         AudioTrack track = player.getPlayingTrack();
         List<AudioTrack> queue = player.getQueue();
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(guild.getName());
+        eb.setTitle(player.getGuild().getName());
         eb.appendDescription("**__Now Playing__:**\n");
         if (track != null) {
             AudioTrackInfo info = track.getInfo();
@@ -83,7 +82,7 @@ public class QueueCommand extends BotCommandImpl implements NoArgsCommand {
 
     @Override
     public void execute(CommandReceivedEvent e) {
-        e.sendEmbeds(createEmbed(bot, e.getGuild(), 0).build())
+        e.sendEmbeds(createEmbed(PlayerManager.getPlayer(e), 0).build())
             .setActionRows(createButtons(0))
             .queue();
     }
@@ -97,11 +96,11 @@ public class QueueCommand extends BotCommandImpl implements NoArgsCommand {
         @Override
         public void handle(BotButtonEvent e) {
             Guild guild = e.getGuild();
-            // noinspection ConstantConditions
-            LinkedList<AudioTrack> queue = PlayerManager.getPlayer(e.getBot(), guild).getQueue();
+            MusicPlayer player = PlayerManager.getPlayer(e.getBot(), guild);
+            LinkedList<AudioTrack> queue = player.getQueue();
             int page = Math.max(0, Math.min((int) Math.ceil(queue.size() / 10.0) - 1, VPMUtil.toInt(e.getArg(0))));
             e.getInteraction()
-                .editMessageEmbeds(createEmbed(e.getBot(), guild, page).build())
+                .editMessageEmbeds(createEmbed(player, page).build())
                 .setActionRows(createButtons(page))
                 .queue();
         }

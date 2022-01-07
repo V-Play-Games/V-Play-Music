@@ -117,7 +117,7 @@ public class VPMUtil {
         MusicPlayer player = PlayerManager.getPlayer(e);
         if (!e.getChannel().equals(player.getBoundChannel())) {
             //noinspection ResultOfMethodCallIgnored
-            action.append("Bound to ").append(e.getChannel().getAsMention()).append("\n");
+            action.appendFormat("Bound to %s\n", e.getChannel());
             player.setBoundChannel(e.getChannel().getIdLong());
         }
         action.queue();
@@ -162,9 +162,10 @@ public class VPMUtil {
     }
 
     public static String listTracks(List<AudioTrack> queue, int page, int limit, boolean startWithOne) {
-        AtomicInteger i = new AtomicInteger(page * limit * (startWithOne ? 0 : 1));
+        int offset = page * limit;
+        AtomicInteger i = new AtomicInteger(startWithOne ? 0 : offset);
         return queue.stream()
-            .skip(page * limit)
+            .skip(offset)
             .limit(limit)
             .map(AudioTrack::getInfo)
             .map(info -> String.format("%d. [%s](%s) by %s (%s)", i.incrementAndGet(), info.title, info.uri, info.author, Util.toString(info.length)))

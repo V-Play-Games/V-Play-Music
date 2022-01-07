@@ -25,8 +25,8 @@ import net.vpg.bot.player.PlayerManager;
 public class PlayCommand extends BotCommandImpl {
     public PlayCommand(Bot bot) {
         super(bot, "play", "Play a track", "p");
-        setMinArgs(1);
         addOption(OptionType.STRING, "track", "Type the name or URL of the song you want to play", true);
+        setMinArgs(1);
     }
 
     @Override
@@ -40,9 +40,7 @@ public class PlayCommand extends BotCommandImpl {
     }
 
     public void execute(CommandReceivedEvent e, String track) {
-        if (!VPMUtil.canJoinVC(e)) {
-            return;
-        }
+        if (!VPMUtil.canJoinVC(e)) return;
         while (track.startsWith("<") && track.endsWith(">")) {
             track = track.substring(1, track.length() - 1);
         }

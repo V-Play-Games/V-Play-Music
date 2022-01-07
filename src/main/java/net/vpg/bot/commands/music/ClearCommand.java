@@ -29,9 +29,7 @@ public class ClearCommand extends BotCommandImpl implements NoArgsCommand {
 
     @Override
     public void execute(CommandReceivedEvent e) {
-        if (!VPMUtil.canJoinVC(e)) {
-            return;
-        }
+        if (!VPMUtil.canJoinVC(e)) return;
         PlayerManager.getPlayer(e).getQueue().clear();
         e.send("Boom! Queue empty.").queue();
     }

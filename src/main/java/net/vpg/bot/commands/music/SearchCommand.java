@@ -31,7 +31,6 @@ import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.framework.Bot;
 import net.vpg.bot.framework.BotButtonEvent;
 import net.vpg.bot.framework.ButtonHandler;
-import net.vpg.bot.framework.Sender;
 import net.vpg.bot.player.PlayerManager;
 
 import java.util.HashMap;
@@ -154,8 +153,8 @@ public class SearchCommand extends BotCommandImpl {
                 case "c":
                     int choice = VPMUtil.toInt(e.getArg(4));
                     AudioTrack track = results.get(page * 5 + choice);
-                    //noinspection ConstantConditions
-                    PlayerManager.getPlayer(e.getBot(), e.getGuild()).queue(Sender.of(e.getMessage()), track);
+                    //TODO: Change this when the JDA message action hierarchy is fixed
+                    //PlayerManager.getPlayer(e.getBot(), e.getGuild()).queue(Sender.of(e.getMessage()), track);
 
                     e.editComponents()
                         .setContent("Selected " + VPMUtil.toString(track))

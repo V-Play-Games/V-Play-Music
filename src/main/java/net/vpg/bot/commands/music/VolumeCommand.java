@@ -17,9 +17,11 @@ package net.vpg.bot.commands.music;
 
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.vpg.bot.commands.BotCommandImpl;
-import net.vpg.bot.commands.CommandReceivedEvent;
+import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
-import net.vpg.bot.framework.Bot;
+import net.vpg.bot.event.CommandReceivedEvent;
+import net.vpg.bot.event.SlashCommandReceivedEvent;
+import net.vpg.bot.event.TextCommandReceivedEvent;
 
 public class VolumeCommand extends BotCommandImpl {
     public VolumeCommand(Bot bot) {
@@ -30,12 +32,12 @@ public class VolumeCommand extends BotCommandImpl {
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
+    public void onTextCommandRun(TextCommandReceivedEvent e) {
         execute(e, VPMUtil.toInt(e.getArg(1)));
     }
 
     @Override
-    public void onSlashCommandRun(CommandReceivedEvent e) {
+    public void onSlashCommandRun(SlashCommandReceivedEvent e) {
         execute(e, (int) e.getLong("volume"));
     }
 

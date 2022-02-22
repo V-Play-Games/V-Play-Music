@@ -18,10 +18,10 @@ package net.vpg.bot.player;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import net.dv8tion.jda.api.entities.Guild;
-import net.vpg.bot.commands.CommandReceivedEvent;
-import net.vpg.bot.framework.Bot;
-import org.jetbrains.annotations.NotNull;
+import net.vpg.bot.core.Bot;
+import net.vpg.bot.event.CommandReceivedEvent;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -64,7 +64,7 @@ public class PlayerManager extends DefaultAudioPlayerManager implements Iterable
         getPlayer(e).loadAndPlay(trackUrl, e, isSearched);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Iterator<MusicPlayer> iterator() {
         return players.values().iterator();

@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.vpg.bot.commands.owner;
+package net.vpg.bot.commands.manager;
 
-import net.vpg.bot.commands.CommandReceivedEvent;
-import net.vpg.bot.commands.manager.WipeCommand;
-import net.vpg.bot.framework.Bot;
+import net.vpg.bot.core.Bot;
+import net.vpg.bot.event.CommandReceivedEvent;
 
 public class WipeCommandImpl extends WipeCommand {
     public WipeCommandImpl(Bot bot) {
@@ -27,8 +26,8 @@ public class WipeCommandImpl extends WipeCommand {
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
-        switch (e.getArg(1)) {
+    public void execute(CommandReceivedEvent e, String arg) {
+        switch (arg) {
             case "all":
             case "ratelimit":
                 bot.getCommands().values().forEach((command) -> command.getRateLimited().clear());

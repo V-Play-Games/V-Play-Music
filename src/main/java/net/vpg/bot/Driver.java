@@ -15,20 +15,15 @@
  */
 package net.vpg.bot;
 
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.vpg.bot.core.BotBuilder;
 import net.vpg.bot.database.Database;
-import net.vpg.bot.framework.Bot;
 
 public class Driver {
     public static void main(String[] args) throws Exception {
-        DataObject properties = DataObject.fromJson(Driver.class.getResourceAsStream("properties.json"));
-        properties.put("token", System.getenv("TOKEN"));
-        Bot bot = new Bot(properties);
-        properties.getArray("managers").stream(DataArray::getLong).forEach(bot::addManager);
-        bot.setDatabase(new Database(System.getenv("DB_URL"), "BotData", bot));
-        bot.getShardManager().setPresence(OnlineStatus.INVISIBLE, null);
-        bot.login();
+        BotBuilder.createDefault("music", System.getenv("TOKEN"))
+            .putProperties(DataObject.fromJson(Driver.class.getResourceAsStream("properties.json")))
+            .setDatabase(new Database(System.getenv("DB_URL"), "BotData"))
+            .build();
     }
 }

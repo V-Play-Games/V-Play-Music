@@ -23,14 +23,16 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.MarkdownUtil;
 import net.vpg.bot.commands.BotCommandImpl;
-import net.vpg.bot.commands.CommandReceivedEvent;
+import net.vpg.bot.core.Bot;
+import net.vpg.bot.core.ButtonHandler;
 import net.vpg.bot.core.VPMUtil;
-import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.BotButtonEvent;
-import net.vpg.bot.framework.ButtonHandler;
+import net.vpg.bot.event.BotButtonEvent;
+import net.vpg.bot.event.CommandReceivedEvent;
+import net.vpg.bot.event.SlashCommandReceivedEvent;
+import net.vpg.bot.event.TextCommandReceivedEvent;
 import net.vpg.bot.player.PlayerManager;
 
 import java.util.HashMap;
@@ -90,12 +92,12 @@ public class SearchCommand extends BotCommandImpl {
     }
 
     @Override
-    public void onCommandRun(CommandReceivedEvent e) {
+    public void onTextCommandRun(TextCommandReceivedEvent e) {
         execute(e, String.join(" ", e.getArgsFrom(1)));
     }
 
     @Override
-    public void onSlashCommandRun(CommandReceivedEvent e) {
+    public void onSlashCommandRun(SlashCommandReceivedEvent e) {
         execute(e, e.getString("track"));
     }
 

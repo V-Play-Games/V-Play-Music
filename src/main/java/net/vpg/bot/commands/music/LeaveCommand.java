@@ -19,26 +19,23 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.vpg.bot.commands.BotCommandImpl;
-import net.vpg.bot.commands.CommandReceivedEvent;
-import net.vpg.bot.commands.NoArgsCommand;
+import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
-import net.vpg.bot.framework.Bot;
+import net.vpg.bot.event.CommandReceivedEvent;
+import net.vpg.bot.event.SlashCommandReceivedEvent;
+import net.vpg.bot.event.TextCommandReceivedEvent;
 import net.vpg.bot.player.MusicPlayer;
 import net.vpg.bot.player.PlayerManager;
 
 import java.util.List;
 
-public class LeaveCommand extends BotCommandImpl implements NoArgsCommand {
+public class LeaveCommand extends BotCommandImpl {
     public LeaveCommand(Bot bot) {
         super(bot, "leave", "Leaves the current VC", "disconnect", "dc");
     }
 
-    @Override
+    @SuppressWarnings("ConstantConditions")
     public void execute(CommandReceivedEvent e) {
-        if (bot.isManager(e.getUser().getIdLong()) && specialBotOwnerAccess(e)) {
-            return;
-        }
-        // noinspection ConstantConditions
         AudioChannel audio = e.getSelfMember().getVoiceState().getChannel();
         if (audio == null) {
             e.send("Leave? Leave what?").queue();
@@ -55,19 +52,25 @@ public class LeaveCommand extends BotCommandImpl implements NoArgsCommand {
         e.send("No. I am vibin' with my people in 'ere, I can't leave 'em alone like that :(").queue();
     }
 
-    public boolean specialBotOwnerAccess(CommandReceivedEvent e) {
-        if (e.getArgs().size() != 2) {
-            return false;
+    @Override
+    public void onTextCommandRun(TextCommandReceivedEvent e) {
+        if (bot.isManager(e.getUser().getIdLong()) && e.getArgs().size() != 1) {
+            if (e.getArg(0).equals("all")) {
+                PlayerManager.getManager(bot).forEach(MusicPlayer::destroy);
+                e.send("DC'ed from everywhere, just for you senpai ;)").queue();
+            } else if (e.getArg(0).equals("this")) {
+                PlayerManager.getPlayer(e).destroy();
+                e.send("DC'ed from here, just for you senpai ;)").queue();
+            } else {
+                e.send("wut").queue();
+            }
+            return;
         }
-        if (e.getArg(1).equals("all")) {
-            PlayerManager.getManager(bot).forEach(MusicPlayer::destroy);
-            e.send("DC'ed from everywhere, just for you senpai ;)").queue();
-        } else if (e.getArg(1).equals("this")) {
-            PlayerManager.getPlayer(e).destroy();
-            e.send("DC'ed from here, just for you senpai ;)").queue();
-        } else {
-            e.send("wut").queue();
-        }
-        return true;
+        execute(e);
+    }
+
+    @Override
+    public void onSlashCommandRun(SlashCommandReceivedEvent e) {
+        execute(e);
     }
 }

@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.vpg.bot.commands.owner;
+package net.vpg.bot.commands.manager;
 
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.vpg.bot.commands.CommandReceivedEvent;
-import net.vpg.bot.commands.manager.RetrieveCommand;
+import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
-import net.vpg.bot.framework.Bot;
+import net.vpg.bot.event.CommandReceivedEvent;
 
 import java.util.Objects;
 import java.util.stream.Collectors;

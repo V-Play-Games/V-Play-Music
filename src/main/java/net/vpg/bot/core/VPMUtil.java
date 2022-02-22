@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.vpg.bot.Driver;
-import net.vpg.bot.commands.CommandReceivedEvent;
-import net.vpg.bot.framework.Util;
+import net.vpg.bot.event.CommandReceivedEvent;
 import net.vpg.bot.player.MusicPlayer;
 import net.vpg.bot.player.PlayerManager;
 

@@ -28,10 +28,10 @@ import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.vpg.bot.commands.CommandReceivedEvent;
+import net.vpg.bot.action.Sender;
+import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
-import net.vpg.bot.framework.Bot;
-import net.vpg.bot.framework.Sender;
+import net.vpg.bot.event.CommandReceivedEvent;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;

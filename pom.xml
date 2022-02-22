@@ -21,19 +21,30 @@
   <packaging>jar</packaging>
   <parent>
     <groupId>com.github.v-play-games</groupId>
-    <artifactId>bot-parent</artifactId>
+    <artifactId>bot.runner</artifactId>
     <version>0.0.2</version>
   </parent>
-  <properties>
-    <bot.framework.version>0.0.2-SNAPSHOT</bot.framework.version>
-  </properties>
   <artifactId>v-play-music</artifactId>
-  <version>0.0.1</version>
   <dependencies>
     <dependency>
       <groupId>com.sedmelluq</groupId>
       <artifactId>lavaplayer</artifactId>
       <version>1.3.78</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.v-play-games</groupId>
+      <artifactId>bot.commands.mod</artifactId>
+      <version>${bot.framework.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.v-play-games</groupId>
+      <artifactId>bot.commands.manager</artifactId>
+      <version>${bot.framework.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.v-play-games</groupId>
+      <artifactId>bot.commands.general</artifactId>
+      <version>${bot.framework.version}</version>
     </dependency>
   </dependencies>
   <repositories>

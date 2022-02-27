@@ -22,6 +22,7 @@ import net.vpg.bot.event.SlashCommandReceivedEvent;
 import net.vpg.bot.event.TextCommandReceivedEvent;
 import net.vpg.bot.player.PlayerManager;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,6 +56,7 @@ public class QuizCommand extends BotCommandImpl implements ManagerCommand {
                 e.sendEmbeds(new EmbedBuilder()
                     .setDescription(scores.entrySet()
                         .stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getValue))
                         .map(score -> i.incrementAndGet() + ". <@" + score.getKey() + "> - " + score.getValue() + " points")
                         .collect(Collectors.joining("\n")))
                     .build()).queue();

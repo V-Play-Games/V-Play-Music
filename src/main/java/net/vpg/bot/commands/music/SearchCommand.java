@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.MarkdownUtil;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.ButtonHandler;
 import net.vpg.bot.core.VPMUtil;
@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SearchCommand extends BotCommandImpl {
+public class SearchCommand extends MusicCommand {
     static final Map<String, List<AudioTrack>> searchResults = new HashMap<>();
 
     public SearchCommand(Bot bot) {

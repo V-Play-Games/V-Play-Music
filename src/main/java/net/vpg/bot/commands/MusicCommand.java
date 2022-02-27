@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.vpg.bot.commands.music;
+package net.vpg.bot.commands;
 
-import net.vpg.bot.commands.MusicCommand;
-import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.Bot;
-import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.event.CommandReceivedEvent;
-import net.vpg.bot.player.MusicPlayer;
-import net.vpg.bot.player.PlayerManager;
 
-public class LoopCommand extends MusicCommand implements NoArgsCommand {
-    public LoopCommand(Bot bot) {
-        super(bot, "loop", "Shows info on currently playing track if any");
+public abstract class MusicCommand extends BotCommandImpl {
+    public static boolean owner = false;
+
+    public MusicCommand(Bot bot, String name, String description, String... aliases) {
+        super(bot, name, description, aliases);
     }
 
     @Override
-    public void execute(CommandReceivedEvent e) {
-        if (!VPMUtil.canJoinVC(e)) return;
-        MusicPlayer player = PlayerManager.getPlayer(e);
-        player.toggleLoop();
-        e.send("Set loop to " + player.isLoop()).queue();
+    public void run(CommandReceivedEvent e) {
+        if (owner && e.getUser().getIdLong() != e.getBot().getOwnerId()) return;
+        super.run(e);
     }
 }

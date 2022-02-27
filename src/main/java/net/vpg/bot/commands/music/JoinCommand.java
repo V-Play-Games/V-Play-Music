@@ -15,13 +15,13 @@
  */
 package net.vpg.bot.commands.music;
 
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.event.CommandReceivedEvent;
 
-public class JoinCommand extends BotCommandImpl implements NoArgsCommand {
+public class JoinCommand extends MusicCommand implements NoArgsCommand {
     public JoinCommand(Bot bot) {
         super(bot, "join", "Joins the audio channel you are currently connected in");
     }

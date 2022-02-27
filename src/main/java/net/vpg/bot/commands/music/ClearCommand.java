@@ -15,14 +15,14 @@
  */
 package net.vpg.bot.commands.music;
 
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.event.CommandReceivedEvent;
 import net.vpg.bot.player.PlayerManager;
 
-public class ClearCommand extends BotCommandImpl implements NoArgsCommand {
+public class ClearCommand extends MusicCommand implements NoArgsCommand {
     public ClearCommand(Bot bot) {
         super(bot, "clear", "Clear the queue");
     }

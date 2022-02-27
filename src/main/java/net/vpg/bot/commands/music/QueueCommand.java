@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.ButtonHandler;
@@ -36,7 +36,7 @@ import net.vpg.bot.player.PlayerManager;
 import java.util.LinkedList;
 import java.util.List;
 
-public class QueueCommand extends BotCommandImpl implements NoArgsCommand {
+public class QueueCommand extends MusicCommand implements NoArgsCommand {
     public QueueCommand(Bot bot) {
         super(bot, "queue", "View the queue", "q");
     }

@@ -17,7 +17,7 @@ package net.vpg.bot.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.Util;
 import net.vpg.bot.core.VPMUtil;
@@ -26,7 +26,7 @@ import net.vpg.bot.event.SlashCommandReceivedEvent;
 import net.vpg.bot.event.TextCommandReceivedEvent;
 import net.vpg.bot.player.PlayerManager;
 
-public class SeekCommand extends BotCommandImpl {
+public class SeekCommand extends MusicCommand {
     public SeekCommand(Bot bot) {
         super(bot, "seek", "Remove the given track from the queue");
         addOption(OptionType.INTEGER, "position", "Index of the track to be removed", true);

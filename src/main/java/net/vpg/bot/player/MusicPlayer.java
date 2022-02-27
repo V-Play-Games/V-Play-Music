@@ -42,6 +42,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListenerAdapter, AudioSendHandler, AudioLoadResultHandler {
     long guildId;
+    long quizHostId;
+    boolean quiz;
     CommandReceivedEvent event;
     boolean isSearched;
     ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -61,6 +63,14 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
         this.bot = manager.bot;
         addListener(this);
         frame.setBuffer(buffer);
+    }
+
+    public long getQuizHostId() {
+        return quizHostId;
+    }
+
+    public void setQuizHostId(long quizHostId) {
+        this.quizHostId = quizHostId;
     }
 
     public Guild getGuild() {
@@ -94,7 +104,7 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
     public MusicPlayer configure(long guildId) {
         this.guildId = guildId;
         //noinspection ConstantConditions
-        bot.getShardManager().getGuildById(guildId).getAudioManager().setSendingHandler(this);
+        getGuild().getAudioManager().setSendingHandler(this);
         return this;
     }
 
@@ -150,7 +160,7 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
     }
 
     public TextChannel getBoundChannel() {
-        return bot.getShardManager().getTextChannelById(boundChannelId);
+        return getGuild().getTextChannelById(boundChannelId);
     }
 
     public void setBoundChannel(long id) {
@@ -159,15 +169,22 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
 
     public void playNext() {
         clearSkipVotes();
-        startTrack(queue.poll(), false);
+        AudioTrack track = queue.poll();
+        if (startTrack(track, false) && quizHostId != 0) {
+            bot.getShardManager()
+                .getUserById(quizHostId)
+                .openPrivateChannel()
+                .flatMap(c -> c.sendMessage(VPMUtil.toString(track)))
+                .queue();
+        }
     }
 
     public void queue(Sender e, AudioTrack track) {
         if (!startTrack(track, true)) {
             queue.offer(track);
-            e.send("Added to queue: " + VPMUtil.toString(track)).queue();
+            e.send("Added to queue: " + VPMUtil.toString(track)).setEphemeral(quiz).queue();
         } else {
-            e.send("Playing: " + VPMUtil.toString(track)).queue();
+            e.send("Playing: " + VPMUtil.toString(track)).setEphemeral(quiz).queue();
         }
     }
 
@@ -181,6 +198,7 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
             .append(" tracks from playlist `")
             .append(playlist.getName())
             .append("`")
+            .setEphemeral(quiz)
             .queue();
     }
 
@@ -205,9 +223,10 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
     }
 
     // Methods for loading search results
-    public void loadAndPlay(String trackUrl, CommandReceivedEvent event, boolean isSearched) {
+    public void loadAndPlay(String trackUrl, CommandReceivedEvent event, boolean isSearched, boolean quiz) {
         this.isSearched = isSearched;
         this.event = event;
+        this.quiz = quiz;
         manager.loadItemOrdered(this, trackUrl, this);
     }
 
@@ -263,6 +282,9 @@ public class MusicPlayer extends DefaultAudioPlayer implements AudioEventListene
             if (loop.get()) {
                 startTrack(e.track.makeClone(), false);
             } else {
+                if (quizHostId != 0) {
+                    getBoundChannel().sendMessage("The song was " + VPMUtil.toString(e.track)).queue();
+                }
                 playNext();
             }
         } else if (e.endReason != AudioTrackEndReason.CLEANUP && loopQueue.get()) {

@@ -16,14 +16,14 @@
 package net.vpg.bot.commands.music;
 
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.event.CommandReceivedEvent;
 import net.vpg.bot.event.SlashCommandReceivedEvent;
 import net.vpg.bot.event.TextCommandReceivedEvent;
 
-public class VolumeCommand extends BotCommandImpl {
+public class VolumeCommand extends MusicCommand {
     public VolumeCommand(Bot bot) {
         super(bot, "volume", "Shows info on currently playing track if any");
         addOption(OptionType.INTEGER, "volume", "An integer in the range of 1 - 1000", true);

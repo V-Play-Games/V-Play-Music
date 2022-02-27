@@ -15,7 +15,7 @@
  */
 package net.vpg.bot.commands.music;
 
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
@@ -23,7 +23,7 @@ import net.vpg.bot.event.CommandReceivedEvent;
 import net.vpg.bot.player.MusicPlayer;
 import net.vpg.bot.player.PlayerManager;
 
-public class PauseCommand extends BotCommandImpl implements NoArgsCommand {
+public class PauseCommand extends MusicCommand implements NoArgsCommand {
     public PauseCommand(Bot bot) {
         super(bot, "pause", "Stops the current song");
     }

@@ -18,7 +18,7 @@ package net.vpg.bot.commands.music;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.event.CommandReceivedEvent;
@@ -29,7 +29,7 @@ import net.vpg.bot.player.PlayerManager;
 
 import java.util.List;
 
-public class LeaveCommand extends BotCommandImpl {
+public class LeaveCommand extends MusicCommand {
     public LeaveCommand(Bot bot) {
         super(bot, "leave", "Leaves the current VC", "disconnect", "dc");
     }

@@ -16,7 +16,7 @@
 package net.vpg.bot.commands.music;
 
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.event.CommandReceivedEvent;
@@ -24,7 +24,7 @@ import net.vpg.bot.event.SlashCommandReceivedEvent;
 import net.vpg.bot.event.TextCommandReceivedEvent;
 import net.vpg.bot.player.PlayerManager;
 
-public class PlayCommand extends BotCommandImpl {
+public class PlayCommand extends MusicCommand {
     public PlayCommand(Bot bot) {
         super(bot, "play", "Play a track", "p");
         addOption(OptionType.STRING, "track", "Type the name or URL of the song you want to play", true);
@@ -43,12 +43,14 @@ public class PlayCommand extends BotCommandImpl {
 
     public void execute(CommandReceivedEvent e, String track) {
         if (!VPMUtil.canJoinVC(e)) return;
+        boolean quiz = track.startsWith("q:");
+        if (quiz) track = track.substring(2);
         while (track.startsWith("<") && track.endsWith(">")) {
             track = track.substring(1, track.length() - 1);
         }
         if (!VPMUtil.isUri(track) && !track.startsWith("scsearch:")) {
             track = "ytsearch:" + track;
         }
-        PlayerManager.getManager(bot).loadAndPlay(e, track, false);
+        PlayerManager.getManager(bot).loadAndPlay(e, track, false, quiz);
     }
 }

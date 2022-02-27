@@ -15,8 +15,9 @@
  */
 package net.vpg.bot.commands.music;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Member;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.commands.NoArgsCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
@@ -26,7 +27,7 @@ import net.vpg.bot.player.PlayerManager;
 
 import java.util.List;
 
-public class SkipCommand extends BotCommandImpl implements NoArgsCommand {
+public class SkipCommand extends MusicCommand implements NoArgsCommand {
     public SkipCommand(Bot bot) {
         super(bot, "skip", "Skips the current playing track if any", "s");
     }
@@ -37,12 +38,20 @@ public class SkipCommand extends BotCommandImpl implements NoArgsCommand {
             return;
         }
         MusicPlayer player = PlayerManager.getPlayer(e);
-        if (player.getPlayingTrack() == null) {
+        AudioTrack track = player.getPlayingTrack();
+        if (track == null) {
             e.send("There's nothin' playin' in 'ere. Party's over. Let's have an after-party whaddaya think?").queue();
             return;
         }
         List<Member> listeningMembers = VPMUtil.getListeningMembers(player.getConnectedAudioChannel());
-        if (listeningMembers.size() == 1 && listeningMembers.get(0).equals(e.getMember())) {
+        if (player.getQuizHostId() == e.getUser().getIdLong()) {
+            if (player.getQuizHostId() != 0) {
+                player.getBoundChannel().sendMessage("The song was " + VPMUtil.toString(track)).queue();
+            }
+            player.playNext();
+            e.send("Successfully skipped!").queue();
+            return;
+        } else if (listeningMembers.size() == 1 && listeningMembers.get(0).equals(e.getMember())) {
             player.playNext();
             e.send("Successfully skipped!").queue();
             return;

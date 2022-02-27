@@ -60,8 +60,8 @@ public class PlayerManager extends DefaultAudioPlayerManager implements Iterable
         return new MusicPlayer(this);
     }
 
-    public void loadAndPlay(CommandReceivedEvent e, String trackUrl, boolean isSearched) {
-        getPlayer(e).loadAndPlay(trackUrl, e, isSearched);
+    public void loadAndPlay(CommandReceivedEvent e, String trackUrl, boolean isSearched, boolean quiz) {
+        getPlayer(e).loadAndPlay(trackUrl, e, isSearched, quiz);
     }
 
     @Nonnull

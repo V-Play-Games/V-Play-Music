@@ -17,7 +17,7 @@ package net.vpg.bot.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.vpg.bot.commands.BotCommandImpl;
+import net.vpg.bot.commands.MusicCommand;
 import net.vpg.bot.core.Bot;
 import net.vpg.bot.core.VPMUtil;
 import net.vpg.bot.event.CommandReceivedEvent;
@@ -27,7 +27,7 @@ import net.vpg.bot.player.PlayerManager;
 
 import java.util.LinkedList;
 
-public class SwapCommand extends BotCommandImpl {
+public class SwapCommand extends MusicCommand {
     public SwapCommand(Bot bot) {
         super(bot, "swap", "Swap songs through the queue");
         addOption(OptionType.INTEGER, "swap1", "Index of the first track to swap", true);
